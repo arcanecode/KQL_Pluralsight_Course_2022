@@ -1,0 +1,34 @@
+//------------------------------------------------------------------------------
+// Kusto Query Language: Operators
+// Demo - Top
+//
+// The demos in this folder are part of my Pluralsight course,
+//   Kusto Query Language: Operators
+//
+// A full list of my Pluralsight Courses can be found at:
+//   https://arcanecode.com/info/
+//
+// You can find additional information at my blog post, linked below.
+//
+// Fun With KQL - Top
+// https://arcanecode.com/2022/06/20/fun-with-kql-top/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Top Basics
+Perf
+| top 20 by TimeGenerated desc
+
+// Example 2 - Top Troubleshooting
+Perf
+| where CounterName == "Free Megabytes"
+| distinct Computer
+         , CounterName
+         , CounterValue
+| top 10 by CounterValue asc

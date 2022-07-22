@@ -1,0 +1,63 @@
+//------------------------------------------------------------------------------
+// Kusto Query Language: Operators
+// Demo - Summarize
+//
+// The demos in this folder are part of my Pluralsight course,
+//   Kusto Query Language: Operators
+//
+// A full list of my Pluralsight Courses can be found at:
+//   https://arcanecode.com/info/
+//
+// You can find additional information at my blog post, linked below.
+//
+// Fun With KQL - Summarize
+// https://arcanecode.com/2022/05/16/fun-with-kql-summarize/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Summarize Bssics
+Perf
+| summarize count() by CounterName
+
+// Example 2 - Summarizing on Multiple Columns
+Perf
+| summarize count() by ObjectName, CounterName
+
+// Example 3 - A Count By Any Other Name
+Perf
+| summarize PerfCount=count()
+         by ObjectName, CounterName
+
+// Example 4 - Code Formatting Note
+Perf
+| summarize PerfCount=count()
+         by ObjectName,
+            CounterName
+Perf
+| summarize PerfCount=count()
+         by ObjectName
+          , CounterName
+
+// Example 5 - Summarize With Other Aggregations
+Perf
+| where CounterName == "% Free Space"
+| summarize NumberOfEntries=count()
+          , AverageFreeSpace=avg(CounterValue)
+         by CounterName
+
+// Example 6 - Bin Basics
+Perf
+| summarize NumberOfEntries=count()
+         by bin(TimeGenerated, 1d)
+
+// Example 7 - Other Ways to Bin
+Perf
+| where CounterName == "% Free Space"
+| summarize NumberOfRowsAtThisPercentLevel=count()
+         by bin(CounterValue,10)

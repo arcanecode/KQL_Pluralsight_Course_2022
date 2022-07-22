@@ -1,0 +1,49 @@
+//------------------------------------------------------------------------------
+// Kusto Query Language: Operators
+// Demo - Count
+//
+// The demos in this folder are part of my Pluralsight course,
+//   Kusto Query Language: Operators
+//
+// A full list of my Pluralsight Courses can be found at:
+//   https://arcanecode.com/info/
+//
+// You can find additional information at my blog post, linked below.
+//
+// Fun With KQL - Count
+// https://arcanecode.com/2022/05/09/fun-with-kql-count/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Count Basics
+Perf
+| count
+
+// Example 2 - Using Count Like Take
+Perf
+| where TimeGenerated  >= ago(1h)
+    and CounterName == "Bytes Received/sec"
+    and CounterValue > 0
+| count
+
+// Example 3 - Pairing Down Your Data
+Perf
+| where TimeGenerated  >= ago(1h)
+| count
+
+Perf
+| where CounterName == "Bytes Received/sec"
+    and CounterValue > 0
+| count
+
+Perf
+| where TimeGenerated  >= ago(1h)
+    and CounterName == "Bytes Received/sec"
+    and CounterValue > 0
+| count
