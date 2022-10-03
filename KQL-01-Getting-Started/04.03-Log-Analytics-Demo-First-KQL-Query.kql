@@ -1,0 +1,76 @@
+//------------------------------------------------------------------------------
+// Kusto Query Language (KQL) From Scratch
+// Course 1 - Introduction
+//
+// This is an expanded version of the demo code shown in the fourth module
+// of course 1.
+//
+// Copyright (c) 2018, 2022. Robert C. Cain.
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// This code may NOT be redistributed in it's entirely without permission
+// of one of it's copyright holders.
+//------------------------------------------------------------------------------
+
+// This is a comment
+
+//------------------------------------------------------------------------------
+// Use the left/right arrow on the left of this window, at the top to expand
+// the schema pane.
+//
+// In the ACTIVE area, is Demo. While not an exact analogy it is similar
+// to a database server.
+//
+// Under it are Table Groups. Table groups are kind of like databases, but
+// more accurately would be a way to collect a group of tables together.
+// Unlike a database, a table can be in more than one table group.
+//
+// Each table exposes a list of columns containing the actual data.
+//------------------------------------------------------------------------------
+
+// To retrieve data, you can simply enter the table name and hit the
+// Run button at the top, or use SHIFT+ENTER
+// Be warned just a table name has the potential to return a lot of data, so
+// be patient if you execute this kind of query.
+
+// This is a comment
+
+// Contrasting with SQL
+// To get all rows from the Perf table in SQL, you'd need:
+// SELECT * FROM Perf
+
+// In KQL, we can simply use:
+Perf
+
+// A bit more complex query
+// SELECT TOP 100 * FROM Perf
+// WHERE CounterName = "Free Megabytes"
+// ORDER BY CounterValue
+
+Perf |
+where CounterName == "Free Megabytes" |
+top 100 by CounterValue
+
+// Syntax is flexible - Pipe can be at the start
+Perf 
+| where CounterName == "Free Megabytes" 
+| top 100 by CounterValue
+
+// It can also all be on a single line
+Perf | where CounterName == "Free Megabytes" | top 100 by CounterValue
+
+// You do have intellisense! (Type out the above query to demonstrate)
+
+
+
+// KQL is case senstive, unlike SQL
+// Perf is not the same as perf or PERF
+// Likewise with column names
+// CounterName, not countername or COUNTERNAME
+
+// Commands are also case senstive
+// top works, TOP or Top does not
+
+
+
