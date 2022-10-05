@@ -57,6 +57,11 @@ Perf
 | where CounterName == "Free Megabytes" 
 | top 100 by CounterValue
 
+// We can also choose to indent lines if we wish
+Perf 
+  | where CounterName == "Free Megabytes" 
+  | top 100 by CounterValue
+
 // It can also all be on a single line
 Perf | where CounterName == "Free Megabytes" | top 100 by CounterValue
 
