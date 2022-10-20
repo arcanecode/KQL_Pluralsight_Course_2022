@@ -1,16 +1,16 @@
-# Module 1 - Clip 1 - Voice Over
+# Kusto Query Language: Getting Started
 
-This module is just for the "voice over", the brief clip used for students to do a preview of this course. It's not part of the main course.
+This folder contains the support files for my Pluralsight course, Kusto Query Language: Getting Started.
 
-## Formatting Guide
+The files with a KQL extension are the code samples used in the course.
 
-The notes in this file are used during the recording of the course. It is not meant to be a word for word script, but rather the talking points used for recording.
+Files with MD are markdown files that contained my notes used during the creation of the course. They are not an exact script, but close. They will serve as a good reminder for elements presented in the videos.
 
-Notes in plain text are to be used during the recording.
+There is also a PowerBI sample with a PBIX extension.
 
-**Notes in bold are instructions during recording, not to be spoken.**
+If you downloaded this from the Pluralsight page for the course, these files will remain static. If you are viewing them on my GitHub site, they will be updated with errata. As new courses are added their files will be added in other folders.
 
-_Notes in italic will be used during the video editing processing._
+---
 
 ## Author Information
 
