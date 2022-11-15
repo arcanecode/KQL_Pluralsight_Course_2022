@@ -1,0 +1,40 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Take
+//
+// The demos in this post are part of my blog post, Fun With KQL - Take
+// https://arcanecode.com/2022/05/02/fun-with-kql-take/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Examle 1 - Take Basics
+Perf
+| take 10
+
+// Example 2 - Building With Take
+// Step 1
+Perf
+| where TimeGenerated >= ago(1h)
+| take 5
+
+// Step 2
+Perf
+| where TimeGenerated >= ago(1h)
+    and CounterName == "Bytes Recieved/sec"
+| take 5
+
+// Step 3
+Perf
+| where TimeGenerated >= ago(1h)
+    and CounterName == "Bytes Recieved/sec"
+| where CounterValue > 0
+| take 33
+
+// Example 3 - Limit
+Perf
+| limit 10

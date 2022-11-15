@@ -1,0 +1,73 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Where
+//
+// The demos in this post are part of my blog post, Fun With KQL - Where
+// https://arcanecode.com/2022/04/25/fun-with-kql-where/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Basic Where
+Perf
+| where TimeGenerated >= ago(1h)
+
+// Example 2 - Where with Logical Joins
+Perf
+| where TimeGenerated  >= ago(1h)
+    and CounterName == "Bytes Received/sec"
+
+// Example 3 - Multiple Ands Allowed
+Perf
+| where TimeGenerated  >= ago(1h)
+    and CounterName == "Bytes Received/sec"
+    and CounterValue > 0
+
+
+// Example 4 - OR logic is allowed too!
+Perf
+| where TimeGenerated  >= ago(1h)
+    and (CounterName == "Bytes Received/sec"
+         or
+         CounterName == "% Processor Time"
+        )
+
+// Example 5 -  Combining and's and or's
+Perf
+| where TimeGenerated  >= ago(1h)
+    and (CounterName == "Bytes Received/sec"
+         or
+         CounterName  == "% Processor Time"
+        )
+    and CounterValue > 0
+
+// Example 6 - Stacking Where Operators
+Perf
+| where TimeGenerated  >= ago(1h)
+| where (CounterName == "Bytes Received/sec"
+         or
+         CounterName  == "% Processor Time"
+        )
+| where CounterValue > 0
+
+// Example 7 - Simulating Search with Where
+Perf
+| where * has "Bytes"
+
+// Example 8 - Positional Seaching
+Perf
+| where * hasprefix "Bytes"  // At the start
+
+Perf
+| where * hassuffix "Bytes"  // At the end
+
+Perf
+| where * contains "Bytes"   // contains and has behave the same
+
+// Example 9 - Regular Expressions
+Perf
+| where InstanceName matches regex "[A-Z]:"

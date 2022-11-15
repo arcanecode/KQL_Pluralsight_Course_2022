@@ -1,0 +1,83 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Variants of Project
+//
+// The demos in this post are part of my blog post,
+// Fun With KQL - Variants of Project
+// https://arcanecode.com/2022/06/06/fun-with-kql-variants-of-project/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Project-Away
+Perf
+| where TimeGenerated > ago(1h)
+| project-away TenantId
+             , SourceSystem
+             , CounterPath
+             , MG
+
+// Example 2 - Project-Rename
+Perf
+| where CounterName == "Free Megabytes"
+| project ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+        , TimeGenerated
+| project-rename FreeMB = CounterValue
+| extend FreeGB = FreeMB / 1000
+       , FreeKB = FreeMB * 1000
+
+// Example 3 - Project-Keep
+Perf
+| where CounterName == "Free Megabytes"
+| project-keep
+          ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+        , TimeGenerated
+
+// Example 4 - Project-Keep with Wildcards
+Perf
+| where CounterName == "Free Megabytes"
+| project-keep
+          ObjectName
+        , InstanceName
+        , Counter*
+        , TimeGenerated
+
+// Example 5 - Project-Reorder
+Perf
+| where CounterName == "Free Megabytes"
+| project-reorder ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+        , TimeGenerated
+
+// Example 6 - Project-Reorder with Wildcards
+Perf
+| where CounterName == "Free Megabytes"
+| project-reorder ObjectName
+        , Counter*
+        , InstanceName
+        , TimeGenerated
+
+// Example 7 - Project-Reorder with Wildcards ASC
+Perf
+| where CounterName == "Free Megabytes"
+| project-reorder ObjectName
+        , Counter* asc
+        , InstanceName
+        , TimeGenerated
+
+// Example 8 - Project-Reorder All Columns with Wildcards ASC
+Perf
+| where CounterName == "Free Megabytes"
+| project-reorder * asc

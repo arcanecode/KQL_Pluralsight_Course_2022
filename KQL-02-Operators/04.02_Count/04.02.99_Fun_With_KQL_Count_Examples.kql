@@ -1,0 +1,40 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Count
+//
+// The demos in this post are part of my blog post, Fun With KQL - Count
+// https://arcanecode.com/2022/05/09/fun-with-kql-count/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Count Basics
+Perf
+| count
+
+// Example 2 - Using Count Like Take
+Perf
+| where TimeGenerated  >= ago(1h)
+    and CounterName == "Bytes Received/sec"
+    and CounterValue > 0
+| count
+
+// Example 3 - Pairing Down Your Data
+Perf
+| where TimeGenerated  >= ago(1h)
+| count
+
+Perf
+| where CounterName == "Bytes Received/sec"
+    and CounterValue > 0
+| count
+
+Perf
+| where TimeGenerated  >= ago(1h)
+    and CounterName == "Bytes Received/sec"
+    and CounterValue > 0
+| count

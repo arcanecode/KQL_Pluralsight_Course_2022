@@ -1,0 +1,66 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Search
+//
+// The demos in this post are part of my blog post, Fun With KQL - Search
+// https://arcanecode.com/2022/04/18/fun-with-kql-search/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Basic Serch
+Perf
+| search "Memory"
+
+// Example 2 - Formatting
+Perf | search "Memory"
+
+// Example 3.1 - Case Sensitivity - Case Insensitive by Default
+Perf
+| search "memory"
+
+// Example 3.2 - Making Search Case Sensitive
+Perf
+| search kind=case_sensitive "memory"
+
+// Example 4 - Searching Everything In The Database
+// (Not recommended that you run this)
+search "Memory"
+
+// Example 5 - Search Multiple Tables
+search in (Perf, Event, Alert) "Memory"
+
+// Example 6 - Search A Specific Column
+Perf
+| search CounterName == "Available MBytes"
+
+// Example 7 - Search For Text Anywhere In The Column
+Perf
+| search CounterName:"MBytes"
+
+// Example 8 - Searching Across Columns for Partial Text
+Perf
+| search "*Bytes*"
+
+// Example 9 - StartsWith / EndsWith
+Perf
+| search * startswith "Bytes"
+
+Perf
+| search * endswith "Bytes"
+
+// Example 10
+Perf
+| search "Free*bytes"
+
+// Example 11 - Combining Searches Logically
+Perf
+| search "Free*bytes" and ("C:" or "D:")
+
+// Example 12 - Regular Expressions
+Perf
+| search InstanceName matches regex "[A-Z]:"

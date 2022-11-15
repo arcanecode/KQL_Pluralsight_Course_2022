@@ -1,0 +1,28 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Print
+//
+// The demos in this post are part of my blog post, Fun With KQL - Print
+// https://arcanecode.com/2022/06/27/fun-with-kql-print/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Print Basics
+print "Hello World"
+
+// Example 2 - Print Formatting Tool
+print strcat("**CounterName**", " - ", "**ObjectName**", " has a value of ", "**CounterValue**", " for the date ", "**TimeGenerated**")
+
+// Example 3 - Print and Calculations
+print 11 * 3
+
+// Example 4 - Naming Print Output
+print TheAnswerToLifeTheUniverseAndEverything = 21 * 2
+
+// Example 5 - Print and Dates
+print ago(365d)

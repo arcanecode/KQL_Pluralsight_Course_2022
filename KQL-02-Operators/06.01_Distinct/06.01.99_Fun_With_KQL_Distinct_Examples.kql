@@ -1,0 +1,30 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Distinct
+//
+// The demos in this post are part of my blog post, Fun With KQL - Distinct
+// https://arcanecode.com/2022/06/13/fun-with-kql-distinct/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Distinct Basics
+Perf
+| distinct ObjectName
+
+// Example 2 - Distinct Combination of Columns
+Perf
+| distinct ObjectName, CounterName
+
+// Example 3 - Distinct As A Troubleshooting Tool Part 1
+Alert
+| distinct AlertName
+
+// Example 4 - Distinct As A Troubleshooting Tool Part 2
+Alert
+| where AlertName == "Computers with high processor usage [Log alert on Log Analytics data (InsightsMetrics table)]"
+| distinct Computer
