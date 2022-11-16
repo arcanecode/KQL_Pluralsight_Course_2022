@@ -4,7 +4,7 @@ This project contains code samples for a series of courses done for Pluralsight,
 
 Each folder contains the code samples for a course. See the individual folder for each course for more details on the course.
 
-You can find a lis tof all my courses at the Info page on my blog, [http://arcanecode.me](http://arcanecode.me). As new KQL courses are created they will be added to this info page.
+You can find a list of all my courses at the Info page on my blog, [http://arcanecode.me](http://arcanecode.me). As new KQL courses are created they will be added to this info page.
 
 ---
 

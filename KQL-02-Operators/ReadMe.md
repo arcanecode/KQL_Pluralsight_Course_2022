@@ -1,4 +1,4 @@
-# Kusto Query Language - Operators
+# Kusto Query Language - Beginning Operators
 
 ## Introduction
 
