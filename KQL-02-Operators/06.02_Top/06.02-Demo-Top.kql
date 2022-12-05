@@ -25,10 +25,13 @@
 Perf
 | top 20 by TimeGenerated desc
 
+
 // Example 2 - Top Troubleshooting
 Perf
+| where TimeGenerated >= ago(10m)
 | where CounterName == "Free Megabytes"
 | distinct Computer
          , CounterName
          , CounterValue
 | top 10 by CounterValue asc
+

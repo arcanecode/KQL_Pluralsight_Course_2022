@@ -23,6 +23,7 @@
 
 // Example 1 - Project Basics
 Perf
+| take 100
 | project ObjectName
         , CounterName
         , InstanceName
@@ -32,6 +33,7 @@ Perf
 // Example 2 - Project and Extend
 Perf
 | where CounterName == "Free Megabytes"
+| take 100
 | project ObjectName
         , CounterName
         , InstanceName
@@ -44,6 +46,7 @@ Perf
 // Example 3 - Using Projected Columns In Calculations
 Perf
 | where CounterName == "Free Megabytes"
+| take 100
 | extend FreeGB = CounterValue / 1000
        , FreeMB = CounterValue
        , FreeKB = CounterValue * 1000
@@ -58,6 +61,7 @@ Perf
 // Example 4 - Projecting Calculated Values
 Perf
 | where CounterName == "Free Megabytes"
+| take 100
 | project ObjectName
         , CounterName
         , InstanceName
@@ -69,6 +73,7 @@ Perf
 // Example 5 - Mixing Calculated Values with Columns
 Perf
 | where CounterName == "Free Megabytes"
+| take 100
 | project ObjectName
         , CounterName
         , FreeGB = CounterValue / 1000
@@ -80,14 +85,15 @@ Perf
 // Example 6 - Recordset Sizes
 Perf
 | where CounterName == "Free Megabytes"
+| take 100
 | project ObjectName
         , CounterName
         , InstanceName
         , CounterValue
         , TimeGenerated
-| extend FreeGB = CounterValue / 1000
-       , FreeMB = CounterValue
-       , FreeKB = CounterValue * 1000
+|  extend FreeGB = CounterValue / 1000
+        , FreeMB = CounterValue
+        , FreeKB = CounterValue * 1000
 | project ObjectName
         , CounterName
         , InstanceName
@@ -95,3 +101,19 @@ Perf
         , FreeGB
         , FreeMB
         , FreeKB
+
+Perf
+| where CounterName == "Free Megabytes"
+| take 100
+| project ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+        , TimeGenerated
+| project ObjectName
+        , CounterName
+        , InstanceName
+        , TimeGenerated
+        , FreeGB = CounterValue / 1000
+        , FreeMB = CounterValue
+        , FreeKB = CounterValue * 1000

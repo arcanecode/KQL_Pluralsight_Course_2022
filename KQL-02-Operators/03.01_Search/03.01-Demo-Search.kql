@@ -21,7 +21,7 @@
 // Use at your own risk and discretion.
 //------------------------------------------------------------------------------
 
-// Example 1 - Basic Serch
+// Example 1 - Basic Search
 Perf
 | search "Memory"
 

@@ -26,15 +26,16 @@ Perf
 // Example 3 - Pairing Down Your Data
 Perf
 | where TimeGenerated  >= ago(1h)
-| count
-
-Perf
 | where CounterName == "Bytes Received/sec"
-    and CounterValue > 0
 | count
 
 Perf
 | where TimeGenerated  >= ago(1h)
-    and CounterName == "Bytes Received/sec"
-    and CounterValue > 0
+| where CounterValue > 0
+| count
+
+Perf
+| where TimeGenerated  >= ago(1h)
+| where CounterName == "Bytes Received/sec"
+| where CounterValue > 0
 | count

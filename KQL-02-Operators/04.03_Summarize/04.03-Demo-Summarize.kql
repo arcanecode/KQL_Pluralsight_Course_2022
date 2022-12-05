@@ -20,7 +20,6 @@
 // All demos are licensed under the MIT license. No warranty is provided.
 // Use at your own risk and discretion.
 //------------------------------------------------------------------------------
-
 // Example 1 - Summarize Bssics
 Perf
 | summarize count() by CounterName
@@ -35,29 +34,55 @@ Perf
          by ObjectName, CounterName
 
 // Example 4 - Code Formatting Note
+// No spaces around equal sign, comma at end
 Perf
 | summarize PerfCount=count()
          by ObjectName,
             CounterName
+
+// Spaces around equal, comma at the start
 Perf
-| summarize PerfCount=count()
+| summarize PerfCount = count()
          by ObjectName
           , CounterName
 
 // Example 5 - Summarize With Other Aggregations
 Perf
 | where CounterName == "% Free Space"
-| summarize NumberOfEntries=count()
-          , AverageFreeSpace=avg(CounterValue)
+| summarize NumberOfEntries  = count()
+          , AverageFreeSpace = avg(CounterValue)
+          , MinFreeSpace     = min(CounterValue)
+          , MaxFreeSpace     = max(CounterValue)
+          , SumFreeSpace     = sum(CounterValue)
          by CounterName
+
 
 // Example 6 - Bin Basics
 Perf
+| where TimeGenerated >= ago(7d)
 | summarize NumberOfEntries=count()
          by bin(TimeGenerated, 1d)
+
+
+// Sort descending (most recent date to oldest)
+Perf
+| where TimeGenerated >= ago(7d)
+| summarize NumberOfEntries=count()
+         by bin(TimeGenerated, 1d)
+| sort by TimeGenerated
+
+
+// Sort ascending (oldest date to most recent)
+Perf
+| where TimeGenerated >= ago(7d)
+| summarize NumberOfEntries=count()
+         by bin(TimeGenerated, 1d)
+| sort by TimeGenerated asc
+
 
 // Example 7 - Other Ways to Bin
 Perf
 | where CounterName == "% Free Space"
-| summarize NumberOfRowsAtThisPercentLevel=count()
-         by bin(CounterValue,10)
+| summarize Number_Of_Rows_At_This_Percent_Level = count()
+         by bin(CounterValue, 10)
+| sort by CounterValue

@@ -34,13 +34,13 @@ Perf
 // Step 2
 Perf
 | where TimeGenerated >= ago(1h)
-    and CounterName == "Bytes Recieved/sec"
+    and CounterName == "Available MBytes"
 | take 5
 
 // Step 3
 Perf
 | where TimeGenerated >= ago(1h)
-    and CounterName == "Bytes Recieved/sec"
+    and CounterName == "Available MBytes"
 | where CounterValue > 0
 | take 33
 

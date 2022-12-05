@@ -24,21 +24,25 @@
 // Example 1 - Extend Basics
 Perf
 | where CounterName == "Free Megabytes"
+| take 10
 | extend FreeGB = CounterValue / 1000
 
 // Example 2 - Creating Multiple Columns With Extend
 Perf
 | where CounterName == "Free Megabytes"
+| take 10
 | extend FreeGB = CounterValue / 1000
        , FreeKB = CounterValue * 1000
 
 // Example 3 - Repeating A Column With Extend
 Perf
 | where CounterName == "Free Megabytes"
+| take 10
 | extend FreeGB = CounterValue / 1000
        , FreeMB = CounterValue
        , FreeKB = CounterValue * 1000
 
-// Example 4 - Created Calculaetd Values with Text Data
+// Example 4 - Created Calculated Values with Text Data
 Perf
+| take 10
 | extend ObjectCounter = strcat(ObjectName, " - ", CounterName)

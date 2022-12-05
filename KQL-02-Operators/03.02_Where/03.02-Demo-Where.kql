@@ -69,13 +69,10 @@ Perf
 
 // Example 8 - Positional Seaching
 Perf
-| where * hasprefix "Bytes"  // At the start
+| where * startswith "Bytes"  // At the start
 
 Perf
-| where * hassuffix "Bytes"  // At the end
-
-Perf
-| where * contains "Bytes"   // contains and has behave the same
+| where * endswith "Bytes"  // At the end
 
 // Example 9 - Regular Expressions
 Perf

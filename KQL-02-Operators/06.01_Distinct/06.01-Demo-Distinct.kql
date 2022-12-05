@@ -24,16 +24,20 @@
 // Example 1 - Distinct Basics
 Perf
 | distinct ObjectName
+| sort by ObjectName asc
 
 // Example 2 - Distinct Combination of Columns
 Perf
 | distinct ObjectName, CounterName
+| sort by ObjectName asc
+        , CounterName asc
 
 // Example 3 - Distinct As A Troubleshooting Tool Part 1
-Alert
-| distinct AlertName
+SigninLogs
+| distinct ResultDescription
+
 
 // Example 4 - Distinct As A Troubleshooting Tool Part 2
-Alert
-| where AlertName == "Computers with high processor usage [Log alert on Log Analytics data (InsightsMetrics table)]"
-| distinct Computer
+SigninLogs
+| where ResultDescription == "Invalid password, entered expired password."
+| distinct UserDisplayName
