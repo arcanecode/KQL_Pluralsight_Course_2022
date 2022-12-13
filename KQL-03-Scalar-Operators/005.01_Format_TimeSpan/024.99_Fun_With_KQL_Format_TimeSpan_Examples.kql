@@ -1,0 +1,70 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Format_TimeSpan
+//
+// The demos in this post are part of my blog post,
+//   Fun With KQL - Format_Timespan
+// https
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Format_Timespan Basics
+Perf
+| where TimeGenerated between ( ago(3d) .. now() )
+| take 100                       // done just to give us a small dataset to demo
+| extend TimeGen = now() - TimeGenerated
+| project CounterName
+        , CounterValue
+        , TimeGenerated
+        , TimeGen
+        , format_timespan(TimeGen, "dd:hh:mm:ss")
+        , format_timespan(TimeGen, "dd HH:mm:ss")
+        , format_timespan(TimeGen, "d h:m:s")
+        , format_timespan(TimeGen, "d H:m:s")
+
+// Example 2 - Formatting Examples
+Perf
+| take 20
+| extend TimeGen = endofweek(now()) - TimeGenerated
+| project CounterName
+        , CounterValue
+        , TimeGenerated
+        , TimeGen
+        , format_timespan(TimeGen, "d HH:mm:ss.f")
+        , format_timespan(TimeGen, "d HH:mm:ss.F")
+        , format_timespan(TimeGen, "dd - HH:mm:ss.ff")
+        , format_timespan(TimeGen, "dd - HH:mm:ss.FF")
+        , format_timespan(TimeGen, "ddd, HH:mm:ss.fff")
+        , format_timespan(TimeGen, "ddd, HH:mm:ss.FFF")
+        , format_timespan(TimeGen, "dddd_HH:mm:ss.ffff")
+        , format_timespan(TimeGen, "dddd_HH:mm:ss.FFFF")
+        , format_timespan(TimeGen, "ddddd HH:mm:ss [fffff]")
+        , format_timespan(TimeGen, "ddddd HH:mm:ss [FFFFF]")
+        , format_timespan(TimeGen, "dddddd HH:mm:ss.ffffff")
+        , format_timespan(TimeGen, "dddddd HH:mm:ss.FFFFFF")
+        , format_timespan(TimeGen, "ddddddd / HH:mm:ss.fffffff")
+        , format_timespan(TimeGen, "ddddddd / HH:mm:ss.FFFFFFF")
+
+// Example 3 - Using format_timespan with strcat to make sentences
+Perf
+| take 20
+| extend TimeGen = endofweek(now()) - TimeGenerated
+| project CounterName
+        , CounterValue
+        , TimeGenerated
+        , TimeGen
+        , AsText = strcat( "The calculated timespan is "
+                         , format_timespan(TimeGen, "dd")
+                         , " days, "
+                         , format_timespan(TimeGen, "HH")
+                         , " hours, "
+                         , format_timespan(TimeGen, "mm")
+                         , " minutes, and "
+                         , format_timespan(TimeGen, "ss.ff")
+                         , " seconds."
+                         )

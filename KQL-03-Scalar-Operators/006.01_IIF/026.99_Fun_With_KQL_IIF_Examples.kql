@@ -1,0 +1,51 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - IIF
+//
+// The demos in this post are part of my blog post, Fun With KQL - IIF
+// https
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - iif basics
+Perf
+| where CounterName == "% Free Space"
+| take 100
+| extend FreeState = iif( CounterValue < 70
+                        , "You might want to look at this"
+                        , "You're OK!"
+                        )
+| project Computer
+        , CounterName
+        , CounterValue
+        , FreeState
+
+
+// Example 2 - Use iif with Dates
+
+Perf
+| where CounterName == "% Processor Time"
+    and CounterValue > 0
+| take 10000
+| where TimeGenerated between ( ago(3h) .. now() )
+| extend RightNow = now()
+| extend AdjustedFactor = iif( datetime_part("hour", TimeGenerated) == datetime_part("hour", RightNow)
+                             , "Double Weight"
+                             , "Half Weight"
+                             )
+       , AdjustedValue  = iif( datetime_part("hour", TimeGenerated) == datetime_part("hour", RightNow)
+                             , CounterValue * 2
+                             , CounterValue / 2
+                             )
+| project TimeGenerated
+        , RightNow
+        , AdjustedFactor
+        , CounterValue
+        , AdjustedValue
+        , Computer
+        , CounterName

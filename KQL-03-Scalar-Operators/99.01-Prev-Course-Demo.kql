@@ -1,0 +1,977 @@
+//------------------------------------------------------------------------------
+// These are the demos from the PREVIOUS KQL course, included for reference.
+// It will be removed prior to the new course going live.
+//
+// Kusto Query Language (KQL) From Scratch
+// Module 3 - Scalar Functions
+//
+// The demos in this module serve as a very basic introduction to the KQL
+// language within the Azure Log Analytics environment. 
+//
+// Copyright (c) 2018. Microsoft, Pluralsight, Robert C. Cain. 
+// All rights reserved. This code may be used in part within your own
+// applications. 
+//
+// This code may NOT be redistributed in it's entirely without permission
+// of one of it's copyright holders. 
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+// print
+//------------------------------------------------------------------------------
+
+// print can be used to display output to the result grid. It is primarily
+// a debugging tool. You can use it for static text
+print "Hello World"
+
+
+// But more commonly to confirm calculations
+print 11 * 3
+
+
+// You can also name the output column
+print TheAnswerToLifeTheUniverseAndEverything = 21 * 2
+
+
+//------------------------------------------------------------------------------
+// now
+//------------------------------------------------------------------------------
+
+// Returns the current date/time
+print now()
+
+
+// now is used mostly in datetime math, which is in a later demo in this module
+
+
+//------------------------------------------------------------------------------
+// ago
+//------------------------------------------------------------------------------
+
+// ago returns a time in the past, using the current time as a starting point
+// You can use:
+//           d - days
+//           h - hours
+//           m - minutes
+//           s - seconds
+//          ms - milliseconds
+// microsecond - microseconds
+//        tick - nanosecond
+
+print ago(1d)           // days
+
+print ago(1h)           // hours
+
+print ago(1m)           // minutes
+
+print ago(1s)           // seconds 
+
+print ago(1ms)          // millisecond
+
+print ago(1microsecond) // microsecond
+
+print ago(1tick)        // nanosecond
+
+
+// You can use values other than 1
+print ago(365d) // days
+
+print ago(12h)  // hours
+
+print ago(10m)  // minutes
+
+print ago(90s)  // seconds
+
+
+// Use negative values to go into the future
+print ago(-1d)       // tomorrow
+
+print ago(-365d)     // 1 year in the future
+
+print ago(-1h)       // an hour from now
+
+
+//------------------------------------------------------------------------------
+// sort (aka order)
+//------------------------------------------------------------------------------
+
+// sort will sort the output of a query
+Perf
+| where TimeGenerated > ago(15m)
+| where CounterName == "Avg. Disk sec/Read"
+    and InstanceName == "C:"
+| project Computer
+        , TimeGenerated 
+        , ObjectName
+        , CounterName 
+        , InstanceName 
+        , CounterValue 
+| sort by Computer
+        , TimeGenerated 
+
+
+// By default sort always uses desc (descending) order. You can override
+Perf
+| where TimeGenerated > ago(15m)
+| where CounterName == "Avg. Disk sec/Read"
+    and InstanceName == "C:"
+| project Computer
+        , TimeGenerated 
+        , ObjectName
+        , CounterName 
+        , InstanceName 
+        , CounterValue 
+| sort by Computer asc
+        , TimeGenerated asc
+        
+
+// or mix
+Perf
+| where TimeGenerated > ago(15m)
+| where CounterName == "Avg. Disk sec/Read"
+    and InstanceName == "C:"
+| project Computer
+        , TimeGenerated 
+        , ObjectName
+        , CounterName 
+        , InstanceName 
+        , CounterValue 
+| sort by Computer asc
+        , TimeGenerated 
+
+
+// Order and sort are aliases for each other
+Perf
+| where TimeGenerated > ago(15m)
+| where CounterName == "Avg. Disk sec/Read"
+    and InstanceName == "C:"
+| project Computer
+        , ObjectName
+        , CounterName 
+        , InstanceName 
+        , CounterValue 
+        , TimeGenerated 
+| order by Computer asc
+         , TimeGenerated 
+
+
+//------------------------------------------------------------------------------
+// Extract
+//------------------------------------------------------------------------------
+
+// Here's some demo data we can use...
+Perf
+| where ObjectName == "LogicalDisk"
+    and InstanceName matches regex "[A-Z]:"
+
+// Extract pulls part of a passed in string (the third parameter)
+// based on the regular expression placed inside parenthesis
+// The second param determines what is returned. A 0 returns
+// the whole expression
+Perf
+| where ObjectName == "LogicalDisk"
+    and InstanceName matches regex "[A-Z]:"
+| project Computer 
+        , CounterName 
+        , extract("[A-Z]:", 0, InstanceName)
+
+
+// When the second param is 1, it returns just the part in the parenthesis
+Perf
+| where ObjectName == "LogicalDisk"
+    and InstanceName matches regex "[A-Z]:"
+| project Computer 
+        , CounterName 
+        , extract("([A-Z]):", 1, InstanceName)
+
+
+//------------------------------------------------------------------------------
+// Parse
+//------------------------------------------------------------------------------
+
+// Here is a subset of the data stored in the RenderedDescription column for 
+// one row, just so you can see what we are trying to parse
+
+//Event code: 3005  Event message: An unhandled exception has occurred.  Event time: 4/1/2018 11:44:43 PM  Event time (UTC): 4/1/2018 11:44:43 PM  Event ID: b8eea7d21d044fa8a0a774392f1f5b24  Event sequence: 5892  Event occurrence: 217  Event detail code: 0    Application information:      Application domain: /LM/W3SVC/2/ROOT-2-131670348328019759      Trust level: Full      Application Virtual Path: /      Application Path: C:\inetpub\ContosoRetail\      Machine name: CONTOSOWEB1    Process information:      Process ID: 13200      Process name: w3wp.exe      Account name: IIS APPPOOL\ContosoRetail    Exception information:      Exception type: FormatException        
+// ... more data followed
+
+// Think of parse as telling KQL where it place the cursor for reading text.
+
+// Starting with just a string of text, "Event code: ", tells it to skip over 
+// that text and start reading at the first character after it.
+
+// next, it will read from that position and go until it finds the phrase
+// " Event message: ". All of that text will be put in the myEventCode variable. 
+
+// The cursor is now positioned after Event message:, so it will read from 
+// there until it finds " Event time: ". That text will be stored inside
+// myEventMessage. 
+
+// An * means either read until the next string, or read until end of string. 
+// We didn't provide a column though for it to go in, so this will read 
+// to the end then just throw it away as we don't need it. 
+Event
+| where RenderedDescription startswith "Event code:" 
+| parse RenderedDescription with "Event code: " myEventCode 
+                                 " Event message: " myEventMessage 
+                                 " Event time: " myEventTime 
+                                 " Event time (UTC): " myEventTimeUTC 
+                                 " Event ID: " myEventID 
+                                 " Event sequence: " myEventSequence
+                                 " Event occurrence: " *
+| project myEventCode 
+        , myEventMessage 
+        , myEventTime 
+        , myEventTimeUTC 
+        , myEventID 
+        , myEventSequence 
+
+
+//------------------------------------------------------------------------------
+// Datetime / timespan arithmetic
+//------------------------------------------------------------------------------
+
+// Determine how long ago a counter was generated
+Perf
+| where CounterName == "Avg. Disk sec/Read"
+| where CounterValue > 0
+| take 100                       // done just to give us a small dataset to demo
+| extend HowLongAgo=( now() - TimeGenerated )
+| project Computer 
+        , CounterName
+        , CounterValue  
+        , TimeGenerated 
+        , HowLongAgo 
+
+
+// Time since a specifc date (i.e. start of the year)
+Perf
+| where CounterName == "Avg. Disk sec/Read"
+| where CounterValue > 0
+| take 100                       // done just to give us a small dataset to demo
+| extend HowLongAgo=( now() - TimeGenerated )
+       , TimeSinceStartOfYear=( TimeGenerated - datetime(2018-01-01) )
+| project Computer 
+        , CounterName
+        , CounterValue  
+        , TimeGenerated 
+        , HowLongAgo 
+        , TimeSinceStartOfYear 
+
+
+// To convert a timespan into a specific unit, divide by it
+// Here we divide by 1 hour to convert the output to hours
+// (Also note the need to extend twice to use a calculated value
+//  within another calculation)
+Perf
+| where CounterName == "Avg. Disk sec/Read"
+| where CounterValue > 0
+| take 100                       // done just to give us a small dataset to demo
+| extend HowLongAgo=( now() - TimeGenerated )
+       , TimeSinceStartOfYear=( TimeGenerated - datetime(2018-01-01) )
+| extend TimeSinceStartOfYearInHours=( TimeSinceStartOfYear / 1h )
+| project Computer 
+        , CounterName
+        , CounterValue  
+        , TimeGenerated 
+        , HowLongAgo 
+        , TimeSinceStartOfYear 
+        , TimeSinceStartOfYearInHours
+
+
+// Get the amount of time used
+Usage
+| extend Duration=( EndTime - StartTime )
+| project Computer
+        , StartTime 
+        , EndTime 
+        , Duration 
+
+
+//------------------------------------------------------------------------------
+// StartOf...
+//------------------------------------------------------------------------------
+
+// It can often be useful to know the "Start of", such as the start of the day,
+// week, month, or year
+Event
+| where TimeGenerated >= ago(7d)
+| extend DayGenerated = startofday(TimeGenerated)
+| project Source
+        , TimeGenerated 
+        , DayGenerated 
+
+
+// Most often this would be used to get counts per time frame
+Event
+| where TimeGenerated >= ago(7d)
+| extend DayGenerated = startofday(TimeGenerated)
+| project Source
+        , DayGenerated 
+| summarize EventCount=count() 
+         by DayGenerated
+         , Source
+
+
+// This could be done at other levels, such as month
+Event
+| where TimeGenerated >= ago(365d)
+| extend MonthGenerated = startofmonth(TimeGenerated)
+| project Source
+        , MonthGenerated 
+| summarize EventCount=count() 
+         by MonthGenerated
+         , Source
+
+
+// You can make this easier to read with the addition of the sort operator
+// Most common you'd sort dates in desc order text in asc order
+Event
+| where TimeGenerated >= ago(365d)
+| extend MonthGenerated = startofmonth(TimeGenerated)
+| project Source
+        , MonthGenerated 
+| summarize EventCount=count() 
+         by MonthGenerated
+         , Source
+| sort by MonthGenerated desc
+        , Source asc
+
+
+// Functions also exist for Year and Week
+Event
+| where TimeGenerated >= ago(365d)
+| extend YearGenerated = startofyear(TimeGenerated)
+| project Source
+        , YearGenerated 
+| summarize EventCount=count() 
+         by YearGenerated
+         , Source
+| sort by YearGenerated desc
+        , Source asc
+
+
+Event
+| where TimeGenerated >= ago(365d)
+| extend WeekGenerated = startofweek(TimeGenerated)
+| project Source
+        , WeekGenerated 
+| summarize EventCount=count() 
+         by WeekGenerated
+         , Source
+| sort by WeekGenerated desc
+        , Source asc 
+
+
+//------------------------------------------------------------------------------
+// EndOf...
+//------------------------------------------------------------------------------
+
+// Just like startof, there are corresponding functions for the end of a 
+// time period.
+Event
+| where TimeGenerated >= ago(7d)
+| extend DayGenerated = endofday(TimeGenerated)
+| project Source
+        , DayGenerated 
+| summarize EventCount=count() 
+         by DayGenerated
+         , Source
+| sort by DayGenerated desc
+        , Source asc 
+
+
+// Week
+Event
+| where TimeGenerated >= ago(365d)
+| extend WeekGenerated = endofweek(TimeGenerated)
+| project Source
+        , WeekGenerated 
+| summarize EventCount=count() 
+         by WeekGenerated
+         , Source
+| sort by WeekGenerated desc
+        , Source asc 
+
+
+// Month
+Event
+| where TimeGenerated >= ago(365d)
+| extend MonthGenerated = endofmonth(TimeGenerated)
+| project Source
+        , MonthGenerated 
+| summarize EventCount=count() 
+         by MonthGenerated
+         , Source
+| sort by MonthGenerated desc
+        , Source asc 
+
+
+// Year
+Event
+| where TimeGenerated >= ago(365d)
+| extend YearGenerated = endofyear(TimeGenerated)
+| project Source
+        , YearGenerated 
+| summarize EventCount=count() 
+         by YearGenerated
+         , Source
+| sort by YearGenerated desc
+        , Source asc 
+
+
+//------------------------------------------------------------------------------
+// Between
+//------------------------------------------------------------------------------
+
+// Between is used to get a range of values. 
+Perf
+| where CounterName == "% Free Space" 
+| where CounterValue between ( 70.0 .. 100.0 )
+
+
+// Between can also be used with dates
+// (Note how the query editor detects our use of a date range, and alters the
+//  the date range at the top of the query window to read "Set in query")
+Perf
+| where CounterName == "% Free Space" 
+| where TimeGenerated between ( datetime(2018-04-01) .. datetime(2018-04-03) )
+
+
+// There's also a "NOT" version
+Perf
+| where CounterName == "% Free Space" 
+| where CounterValue !between ( 0.0 .. 69.9999 )
+
+
+//------------------------------------------------------------------------------
+// todynamic
+//------------------------------------------------------------------------------
+
+// Takes json stored in a string and lets you can address its indivdual values
+
+// Here is an example of a json string stored in the security alert table in the
+// column ExtendedProperties
+// "{
+//   ""Alert Start Time (UTC)"": ""2018/04/02 10:57:59.7540414"",
+//   ""Source"": ""IP Address: 175.195.219.31"",
+//   ""Non-Existent Users"": ""84"",
+//   ""Existing Users"": ""1"",
+//   ""Failed Attempts"": ""85"",
+//   ""Successful Logins"": ""0"",
+//   ""Successful User Logons"": ""[]"",
+//   ""Account Logon Ids"": ""[]"",
+//   ""Failed User Logons"": ""DEMOUSER"",
+//   ""End Time UTC"": ""4/2/2018 11:57:54 AM"",
+//   ""ActionTaken"": ""Detected"",
+//   ""resourceType"": ""Virtual Machine"",
+//   ""ServiceId"": ""fb2ebac8-5667-4a74-b9cb-5dba27c9faeb"",
+//   ""ReportingSystem"": ""Azure"",
+//   ""OccuringDatacenter"": ""southcentralus""
+// }"
+
+// After converting it dynamically, use the key in [] to get the value
+SecurityAlert
+| extend ExtProps=todynamic(ExtendedProperties)
+| project AlertName 
+        , TimeGenerated 
+        , ExtProps["Alert Start Time (UTC)"]
+        , ExtProps["Source"]
+        , ExtProps["Non-Existent Users"]
+        , ExtProps["Existing Users"]
+        , ExtProps["Failed Attempts"]
+        , ExtProps["Successful Logins"]
+        , ExtProps["Successful User Logons"]
+        , ExtProps["Account Logon Ids"]
+        , ExtProps["Failed User Logons"]
+        , ExtProps["End Time UTC"]
+        , ExtProps["ActionTaken"]
+        , ExtProps["resourceType"]
+        , ExtProps["ServiceId"]
+        , ExtProps["ReportingSystem"]
+        , ExtProps["OccuringDatacenter"]
+
+
+// You can also use column renaming to give them decent column names
+SecurityAlert
+| extend ExtProps=todynamic(ExtendedProperties)
+| project AlertName 
+        , TimeGenerated 
+        , AlertStartTime = ExtProps["Alert Start Time (UTC)"]
+        , Source = ExtProps["Source"]
+        , NonExistentUsers = ExtProps["Non-Existent Users"]
+        , ExistingUsers = ExtProps["Existing Users"]
+        , FailedAttempts = ExtProps["Failed Attempts"]
+        , SuccessfulLogins = ExtProps["Successful Logins"]
+        , SuccessfulUserLogins = ExtProps["Successful User Logons"]
+        , AccountLogonIds = ExtProps["Account Logon Ids"]
+        , FailedUserLogins = ExtProps["Failed User Logons"]
+        , EndTimeUTC = ExtProps["End Time UTC"]
+        , ActionTaken = ExtProps["ActionTaken"]
+        , ResourceType = ExtProps["resourceType"]
+        , ServiceId = ExtProps["ServiceId"]
+        , ReportingSystem = ExtProps["ReportingSystem"]
+        , OccuringDataCenter = ExtProps["OccuringDatacenter"]
+
+
+// If the key name in json doesn't have spaces, you can use property notation
+// instead of array notation
+SecurityAlert
+| extend ExtProps=todynamic(ExtendedProperties)
+| project AlertName 
+        , TimeGenerated 
+        , AlertStartTime = ExtProps["Alert Start Time (UTC)"]
+        , Source = ExtProps.Source
+        , NonExistentUsers = ExtProps["Non-Existent Users"]
+        , ExistingUsers = ExtProps["Existing Users"]
+        , FailedAttempts = ExtProps["Failed Attempts"]
+        , SuccessfulLogins = ExtProps["Successful Logins"]
+        , SuccessfulUserLogins = ExtProps["Successful User Logons"]
+        , AccountLogonIds = ExtProps["Account Logon Ids"]
+        , FailedUserLogins = ExtProps["Failed User Logons"]
+        , EndTimeUTC = ExtProps["End Time UTC"]
+        , ActionTaken = ExtProps.ActionTaken
+        , ResourceType = ExtProps.resourceType
+        , ServiceId = ExtProps.ServiceId
+        , ReportingSystem = ExtProps.ReportingSystem
+        , OccuringDataCenter = ExtProps.OccuringDatacenter
+
+
+// Although it doesn't apply for this example, multilevel notation is 
+// supported, such as: ExtProps.Level1.Level2
+
+//------------------------------------------------------------------------------
+// format_datetime / format_timespan
+//------------------------------------------------------------------------------
+
+// format_datetime allows you to return specific date formats
+Perf
+| take 100                       // done just to give us a small dataset to demo
+| project CounterName 
+        , CounterValue 
+        , TimeGenerated 
+        , format_datetime(TimeGenerated, "y-M-d")
+        , format_datetime(TimeGenerated, "yyyy-MM-dd")
+        , format_datetime(TimeGenerated, "MM/dd/yyyy")
+        , format_datetime(TimeGenerated, "MM/dd/yyyy hh:mm:ss tt")
+        , format_datetime(TimeGenerated, "MM/dd/yyyy HH:mm:ss")
+        , format_datetime(TimeGenerated, "MM/dd/yyyy HH:mm:ss.ffff")
+        
+// Supported syntax - one letter is single number, two letters two numbers
+//    d - Day, 1 to 31
+//   dd - Day, 01 to 31
+//    M - Month, 1 to 12
+//   MM - Month, 01 to 12
+//    y - Year, 0 to 9999
+//   yy - Year, 00 to 9999
+// yyyy - Year, 0000 to 9999
+
+// Hours and subsceonds can also be used with format_timespan (see below)
+//  h - Hour, 1 to 12
+// hh - Hour, 01 to 12
+//  H - Hour, 1 to 23
+// HH - Hour, 01 to 23
+//  m - Minute, 0 to 59
+// mm - Minute, 00 to 59
+//  s - Second, 0 to 59
+// ss - Second, 00 to 59
+// tt - am/pm
+
+// f/F can also be used for subseconds. Lowercase f will always display a 0,
+// uppercase F's will only display a number if there's a subsecond value. 
+// Otherwise nothing is displayed. 
+// The Number of f's indicates the precesion down to millionth's of a second
+
+
+// You can use these as separators:
+// / - : , . _ [ ] and a space
+
+// format_timespan formats a timespan. 
+// To use a datetime you have to convert it to a timespan using totimespan()
+Perf
+| take 100                       // done just to give us a small dataset to demo
+| project CounterName 
+        , CounterValue 
+        , TimeGenerated 
+        , format_timespan(totimespan(TimeGenerated), "hh:mm:ss")
+
+
+// Timespans are typically the result of datetime math
+Perf
+| where TimeGenerated between ( ago(7d) .. ago(2d) )
+| take 100                       // done just to give us a small dataset to demo
+| extend TimeGen = now() - TimeGenerated
+| project CounterName 
+        , CounterValue 
+        , TimeGenerated 
+        , TimeGen 
+        , format_timespan(TimeGen, "hh:mm:ss")
+        , format_timespan(TimeGen, "HH:mm:ss")
+        , format_timespan(TimeGen, "h:m:s")
+        , format_timespan(TimeGen, "H:m:s")
+
+
+// f/F can also be used for subseconds. Lowercase f will always display a 0,
+// uppercase F's will only display a number if there's a subsecond value. 
+// Otherwise nothing is displayed. 
+// The Number of f's indicates the precesion down to millionth's of a second
+Perf
+| take 100                       // done just to give us a small dataset to demo
+| extend TimeGen = now() - TimeGenerated 
+| project CounterName 
+        , CounterValue 
+        , TimeGenerated 
+        , TimeGen 
+        , format_timespan(TimeGen, "HH:mm:ss.f")
+        , format_timespan(TimeGen, "HH:mm:ss.F")
+        , format_timespan(TimeGen, "HH:mm:ss.ff")
+        , format_timespan(TimeGen, "HH:mm:ss.FF")
+        , format_timespan(TimeGen, "HH:mm:ss.fff")
+        , format_timespan(TimeGen, "HH:mm:ss.FFF")
+        , format_timespan(TimeGen, "HH:mm:ss.ffff")
+        , format_timespan(TimeGen, "HH:mm:ss.FFFF")
+        , format_timespan(TimeGen, "HH:mm:ss.fffff")
+        , format_timespan(TimeGen, "HH:mm:ss.FFFFF")
+        , format_timespan(TimeGen, "HH:mm:ss.ffffff")
+        , format_timespan(TimeGen, "HH:mm:ss.FFFFFF")
+        , format_timespan(TimeGen, "HH:mm:ss.fffffff")
+        , format_timespan(TimeGen, "HH:mm:ss.FFFFFFF")
+
+
+//------------------------------------------------------------------------------
+// datetime_part
+//------------------------------------------------------------------------------
+
+// Extracts part of a date time
+Perf
+| take 100                       // done just to give us a small dataset to demo
+| project CounterName 
+        , CounterValue 
+        , TimeGenerated 
+        , year = datetime_part("year", TimeGenerated)
+        , quarter = datetime_part("quarter", TimeGenerated)
+        , month = datetime_part("month", TimeGenerated)
+        , weekOfYear = datetime_part("weekOfYear", TimeGenerated)
+        , day = datetime_part("day", TimeGenerated)
+        , dayOfYear = datetime_part("dayOfYear", TimeGenerated)
+        , hour = datetime_part("hour", TimeGenerated)
+        , minute = datetime_part("minute", TimeGenerated)
+        , second = datetime_part("second", TimeGenerated)
+        , millisecond = datetime_part("millisecond", TimeGenerated)
+        , microsecond = datetime_part("microsecond", TimeGenerated)
+        , nanosecond = datetime_part("nanosecond", TimeGenerated)
+
+
+// Can be useful if you want to group the number of events by part of
+// the calendar, regardless of a specific date
+// Here we'll count number of events by hour to see which hour of the day
+// has the most events
+Event
+| where TimeGenerated >= ago(7d)
+| extend HourOfDay = datetime_part("hour", TimeGenerated)
+| project HourOfDay 
+| summarize EventCount=count() 
+         by HourOfDay
+| sort by HourOfDay asc 
+
+
+//------------------------------------------------------------------------------
+// Case
+//------------------------------------------------------------------------------
+
+// Used to create labels based on values
+Perf
+| where CounterName == "% Free Space"
+| extend FreeLevel = case( CounterValue < 10, "Critical"
+                         , CounterValue < 30, "Danger"
+                         , CounterValue < 50, "Look at it"
+                         , "You're OK!"
+                         )
+| project Computer
+        , CounterName
+        , CounterValue 
+        , FreeLevel 
+
+
+// These can be useful when summarizing
+Perf
+| where CounterName == "% Free Space"
+| extend FreeLevel = case( CounterValue < 10, "Critical (Less than 10% free disk space)"
+                         , CounterValue < 30, "Danger (10% to 30% free disk space)"
+                         , CounterValue < 50, "Look at it (30% to 50% free disk space)"
+                         , "You're OK! (More than 50% free disk space)"
+                         )
+| summarize ComputerCount=count() 
+         by FreeLevel
+
+
+
+//------------------------------------------------------------------------------
+// iif
+//------------------------------------------------------------------------------
+
+// iif is a mini if/then/else 
+Perf
+| where CounterName == "% Free Space"
+| extend FreeState = iif( CounterValue < 50
+                        , "You might want to look at this"
+                        , "You're OK!"
+                        )
+| project Computer
+        , CounterName
+        , CounterValue 
+        , FreeState 
+
+
+// Could also be used with dates
+Perf
+| where CounterName == "% Free Space"
+| where TimeGenerated between ( ago(60d) .. now() )
+| extend CurrentMonth = iif( datepart("month", TimeGenerated) == datepart("month", now()) 
+                           , "Current Month"
+                           , "Past Months"
+                           )
+| project Computer
+        , CounterName
+        , CounterValue 
+        , CurrentMonth
+        , TimeGenerated  
+
+
+//------------------------------------------------------------------------------
+// isempty / isnull
+//------------------------------------------------------------------------------
+
+// In KQL, strings can be empty, and numeric fields can be null. To handle
+// determining when a string is empty, or a number is null, we have
+// isempty and isnull
+
+// isempty matches on empty text strings
+Perf
+| where isempty( InstanceName )
+| count
+
+Perf
+| where TimeGenerated >= ago(1h)
+| extend InstName = iif( isempty(InstanceName)
+                       , "NO INSTANCE NAME"
+                       , InstanceName
+                       )
+| project Computer
+        , TimeGenerated 
+        , InstanceName 
+        , InstName 
+        , ObjectName 
+        , CounterName 
+
+
+// isnull matches on null columns
+Perf
+| where isnull( SampleCount )
+| count
+
+Perf
+| where TimeGenerated >= ago(1h)
+| extend SampleCountNull = iif( isnull(SampleCount) 
+                              , "No Sample Count"
+                              , tostring(SampleCount) 
+                              )
+| project Computer 
+        , CounterName 
+        , SampleCount 
+        , SampleCountNull 
+
+
+//------------------------------------------------------------------------------
+// Split
+//------------------------------------------------------------------------------
+
+// Use split to break a string into an array based upon a delimiter
+// Note \ is an escape character so you have to use two of them to denote
+// a single one in the string
+Perf
+| take 100                       // done just to give us a small dataset to demo
+| project Computer 
+        , CounterName 
+        , CounterValue 
+        , CounterPath 
+        , CPSplit = split(CounterPath, "\\")
+
+
+// An option third parameter lets you extract a component of the split array
+// into single item arrays
+Perf
+| take 100                       // done just to give us a small dataset to demo
+| extend myComputer = split(CounterPath, "\\", 2) 
+       , myObjectInstance = split(CounterPath, "\\", 3)
+       , myCounterName = split(CounterPath, "\\", 4)
+| project Computer 
+        , ObjectName 
+        , CounterName 
+        , InstanceName 
+        , myComputer 
+        , myObjectInstance
+        , myCounterName
+        , CounterPath  
+
+
+// A better method though is to convert into a single array then
+// convert into individual items
+Perf
+| take 100                       // done just to give us a small dataset to demo
+| extend CounterPathArray = split(CounterPath, "\\") 
+| extend myComputer = CounterPathArray[2] 
+       , myObjectInstance = CounterPathArray[3]
+       , myCounterName = CounterPathArray[4]
+| project Computer 
+        , ObjectName 
+        , CounterName 
+        , InstanceName 
+        , myComputer 
+        , myObjectInstance
+        , myCounterName
+        , CounterPath  
+
+
+//------------------------------------------------------------------------------
+// String Operators
+//------------------------------------------------------------------------------
+
+// The following string operators were seen in the module
+// 80% of the Operators You'll Ever Use:
+// startswith
+// endswith
+// has
+// hasprefix
+// hassuffix
+// contains
+// matches regex
+
+// Most of these have case sensitive versions that end in _cs
+
+// Without case sensitive
+Perf 
+| take 100                       // done just to give us a small dataset to demo
+| where CounterName contains "BYTES"
+
+
+// With case senstive
+Perf 
+| take 100                       // done just to give us a small dataset to demo
+| where CounterName contains_cs "BYTES"
+
+
+// These also have a "NOT" version
+Perf 
+| take 100                       // done just to give us a small dataset to demo
+| where CounterName !contains "Bytes"
+
+
+// in - used to compare a column to a set of values
+Perf
+| take 1000                      // done just to give us a small dataset to demo
+| where CounterName in ("Disk Transfers/sec", "Disk Reads/sec", "Avg. Disk sec/Write") 
+
+
+// Also has a NOT version
+Perf
+| take 100                       // done just to give us a small dataset to demo
+| where CounterName !in ( "Disk Transfers/sec"
+                        , "Disk Reads/sec"
+                        , "Avg. Disk sec/Write"
+                        ) 
+
+//------------------------------------------------------------------------------
+// strcat
+//------------------------------------------------------------------------------
+
+// strcat is used to combine fields together
+Perf
+| take 100                       // done just to give us a small dataset to demo
+| extend CompObjCounter = strcat(Computer, " - ", ObjectName, " - ", CounterName) 
+| project CompObjCounter 
+        , TimeGenerated 
+        , CounterValue 
+
+
+// Use strcat with case and datetime_part to get month names
+Perf
+| where CounterName == "% Free Space"
+| where TimeGenerated between ( ago(12m) .. now() )
+| extend MonthName = case( datetime_part("month", TimeGenerated) ==  1, "Jan "
+                         , datetime_part("month", TimeGenerated) ==  2, "Feb "
+                         , datetime_part("month", TimeGenerated) ==  3, "Mar "
+                         , datetime_part("month", TimeGenerated) ==  4, "Apr "
+                         , datetime_part("month", TimeGenerated) ==  5, "May "
+                         , datetime_part("month", TimeGenerated) ==  6, "Jun "
+                         , datetime_part("month", TimeGenerated) ==  7, "Jul "
+                         , datetime_part("month", TimeGenerated) ==  8, "Aug "
+                         , datetime_part("month", TimeGenerated) ==  9, "Sep "
+                         , datetime_part("month", TimeGenerated) == 10, "Oct "
+                         , datetime_part("month", TimeGenerated) == 11, "Nov "
+                         , datetime_part("month", TimeGenerated) == 12, "Dec "
+                         , "Unknown Month"
+                         )
+| extend DateText = strcat( MonthName
+                          , datetime_part("day", TimeGenerated)
+                          , ", "
+                          , datetime_part("year", TimeGenerated) 
+                          ) 
+| project Computer 
+        , CounterName 
+        , CounterValue 
+        , TimeGenerated 
+        , MonthName
+        , DateText  
+
+
+//------------------------------------------------------------------------------
+// Combining it all
+//------------------------------------------------------------------------------
+
+// This query combines much of what we've learned in this course.
+
+// It first gets the Event table for all rows in the last year (365 days),
+// excluding the current month. We exclude the current month as since it is
+// not complete it might give misleading results
+
+// Next, it condenses the data, summarizing it to just the count of 
+// items for each month
+
+// After this it sorts the rows by the calendar month 
+
+// We then calculate the month number and year numbers as two new
+// columns
+
+// Next, we use a case to determine the text for the month number. 
+// Because we are using a calculated column in this, we had to create
+// a new extend so KQL would know it exists.
+
+// We then create a string with the year and month name. Like the
+// above, to use a calculated column we had to do another extend as
+// the calculated column doesn't exist until the extend is complete
+
+// Finally we project only the year-month string and the event count
+Event
+| where TimeGenerated between ( ago(365d) .. startofmonth(now()) )
+| summarize EventCount = count() by calMonth=startofmonth(TimeGenerated) 
+| sort by calMonth desc
+| extend MonthNumber = datetime_part("month", calMonth)
+       , YearNumber = datetime_part("year", calMonth)
+| extend MonthName = case( MonthNumber ==  1, "Jan "
+                         , MonthNumber ==  2, "Feb "
+                         , MonthNumber ==  3, "Mar "
+                         , MonthNumber ==  4, "Apr "
+                         , MonthNumber ==  5, "May "
+                         , MonthNumber ==  6, "Jun "
+                         , MonthNumber ==  7, "Jul "
+                         , MonthNumber ==  8, "Aug "
+                         , MonthNumber ==  9, "Sep "
+                         , MonthNumber == 10, "Oct "
+                         , MonthNumber == 11, "Nov "
+                         , MonthNumber == 12, "Dec "
+                         , "Unknown Month"
+                         )
+| extend YearMonth = strcat( MonthName, " - ", YearNumber) 
+| project YearMonth, EventCount 

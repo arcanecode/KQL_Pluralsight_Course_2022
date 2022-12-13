@@ -1,0 +1,57 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - DateTime_Part
+//
+// The demos in this post are part of my blog post, Fun With KQL - DateTime_Part
+// https
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+
+// Example 1 - DateTime_Part Basics
+Perf
+| take 100                       // done just to give us a small dataset to demo
+| project CounterName
+        , CounterValue
+        , TimeGenerated
+        , year = datetime_part("year", TimeGenerated)
+        , quarter = datetime_part("quarter", TimeGenerated)
+        , month = datetime_part("month", TimeGenerated)
+        , weekOfYear = datetime_part("weekOfYear", TimeGenerated)
+        , day = datetime_part("day", TimeGenerated)
+        , dayOfYear = datetime_part("dayOfYear", TimeGenerated)
+        , hour = datetime_part("hour", TimeGenerated)
+        , minute = datetime_part("minute", TimeGenerated)
+        , second = datetime_part("second", TimeGenerated)
+        , millisecond = datetime_part("millisecond", TimeGenerated)
+        , microsecond = datetime_part("microsecond", TimeGenerated)
+        , nanosecond = datetime_part("nanosecond", TimeGenerated)
+
+// These are the valid values for datetime_part
+// Year
+// Quarter
+// Month
+// week_of_year
+// Day
+// DayOfYear
+// Hour
+// Minute
+// Second
+// Millisecond
+// Microsecond
+// Nanosecond
+
+
+// Example 2 - Get a count of records logged to Perf by hour of day
+Perf
+| where TimeGenerated >= ago(7d)
+| extend HourOfDay = datetime_part("hour", TimeGenerated)
+| project HourOfDay
+| summarize PerfCount=count()
+         by HourOfDay
+| sort by HourOfDay asc
