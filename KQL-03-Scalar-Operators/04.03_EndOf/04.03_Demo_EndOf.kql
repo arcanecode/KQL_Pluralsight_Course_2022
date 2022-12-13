@@ -1,0 +1,83 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - EndOf...
+//
+// The demos in this post are part of my blog post, Fun With KQL - EndOf
+// https
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - EndOf basics
+Perf
+| where TimeGenerated >= startofyear( now() )
+| take 1000
+| extend DayGenerated = endofday(TimeGenerated)
+| project TimeGenerated
+        , DayGenerated
+        , Computer
+        , CounterName
+        , CounterValue
+
+// Calculating startof last year
+print startofyear(now(-365d))
+
+// To go back 2 years, just multiply 365 by 2 (or however many years you need)
+print startofyear(now(-730d))
+
+// Example 2 - Summarizing by EndOf Day
+Perf
+| where TimeGenerated >= startofyear( now() )
+| extend DayGenerated = endofday(TimeGenerated)
+| project TimeGenerated
+        , DayGenerated
+        , Computer
+| summarize LogCount = count()
+         by DayGenerated
+          , Computer
+| sort by Computer asc
+        , DayGenerated asc
+
+// Example 3 - EndOfMonth
+Perf
+| where TimeGenerated >= startofyear( now() )
+| extend MonthGenerated = endofmonth(TimeGenerated)
+| project TimeGenerated
+        , MonthGenerated
+        , Computer
+| summarize LogCount = count()
+         by MonthGenerated
+          , Computer
+| sort by Computer asc
+        , MonthGenerated asc
+
+// Example 4 - EndOfYear
+Perf
+| where TimeGenerated >= startofyear( now(-768d) )
+| extend YearGenerated = endofyear(TimeGenerated)
+| project TimeGenerated
+        , YearGenerated
+        , Computer
+| summarize LogCount = count()
+         by YearGenerated
+          , Computer
+| sort by Computer asc
+        , YearGenerated asc
+
+
+// Example 5 - EndOfWeek
+Perf
+| where TimeGenerated >= startofyear( now() )
+| extend WeekGenerated = endofweek(TimeGenerated)
+| project TimeGenerated
+        , WeekGenerated
+        , Computer
+| summarize LogCount = count()
+         by WeekGenerated
+          , Computer
+| sort by Computer asc
+        , WeekGenerated asc
