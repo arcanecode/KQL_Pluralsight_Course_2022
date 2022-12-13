@@ -1,0 +1,88 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Sort
+//
+// The demos in this post are part of my blog post, Fun With KQL - Sort
+// https
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Sort Basics
+Perf
+| where TimeGenerated > ago(15m)
+| where CounterName == "Avg. Disk sec/Read"
+    and InstanceName == "C:"
+| take 20
+| project Computer
+        , TimeGenerated
+        , ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+| sort by Computer
+        , TimeGenerated
+
+// Example 2 - Sort in Ascending Order
+Perf
+| where TimeGenerated > ago(15m)
+| where CounterName == "Avg. Disk sec/Read"
+    and InstanceName == "C:"
+| take 20
+| project Computer
+        , TimeGenerated
+        , ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+| sort by Computer asc
+        , TimeGenerated asc
+
+// Example 3 - Mixed Sorting
+Perf
+| where TimeGenerated > ago(15m)
+| where CounterName == "Avg. Disk sec/Read"
+    and InstanceName == "C:"
+| take 20
+| project Computer
+        , TimeGenerated
+        , ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+| sort by Computer asc
+        , TimeGenerated
+
+// Example 4 - Adding desc for Clarity
+Perf
+| where TimeGenerated > ago(15m)
+| where CounterName == "Avg. Disk sec/Read"
+    and InstanceName == "C:"
+| take 20
+| project Computer
+        , TimeGenerated
+        , ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+| sort by Computer asc
+        , TimeGenerated desc
+
+// Example 5 - Order By
+Perf
+| where TimeGenerated > ago(15m)
+| where CounterName == "Avg. Disk sec/Read"
+    and InstanceName == "C:"
+| take 20
+| project Computer
+        , ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+        , TimeGenerated
+| order by Computer asc
+         , TimeGenerated

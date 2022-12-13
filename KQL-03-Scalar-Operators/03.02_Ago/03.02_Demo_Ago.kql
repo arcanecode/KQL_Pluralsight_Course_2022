@@ -1,0 +1,45 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Ago
+//
+// The demos in this post are part of my blog post, Fun With KQL - Ago
+// https://arcanecode.com/2022/07/11/fun-with-kql-ago/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Ago Basics
+print now(), ago(1d)
+
+// Example 2 - Ago Timespans
+print RightNow        = now()
+    , OneDay          = ago(1d)
+    , OneHour         = ago(1h)
+    , OneMinute       = ago(1m)
+    , OneSecond       = ago(1s)
+    , OneMilliseconds = ago(1ms)
+    , OneMicroseond   = ago(1microsecond)
+
+// Example 3 - Ago vs Now
+print RightNow = now()
+    , Future   = now(1d)
+    , Past     = ago(1d)
+
+// Example 4 - Ago vs Now Multiple Days
+print RightNow = now()
+    , Future   = now(2d)
+    , Past     = ago(2d)
+
+// Example 5 - Ago in Queries
+Perf
+| where TimeGenerated >= ago(1h)
+| extend RightNow = now()
+| take 10
+
+// Example 6 - Simulate Now with Ago
+print RightNow = now()
+    , AlsoRightNow = ago(0d)
