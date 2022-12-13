@@ -1,0 +1,54 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - IsNull and IsEmpty
+//
+// The demos in this post are part of my blog post,
+//   Fun With KQL - IsNull and IsEmpty
+// https
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// In KQL, strings can be empty, and numeric fields can be null. To handle
+// determining when a string is empty, or a number is null, we have
+// isempty and isnull
+
+// Example 1 - isnull matches on null numeric columns
+AppExceptions
+| where isnull( SeverityLevel)
+| count
+
+// Example 2 - using IsNull to supply missing data
+AppExceptions
+| take 1000
+| extend SeverityLevelText = iif( isnull( SeverityLevel )
+                                 , "No Severity Level"
+                                 , tostring( SeverityLevel )
+                                 )
+| project TimeGenerated
+        , SeverityLevel
+        , SeverityLevelText
+        , ExceptionType
+
+// Example 3 -  isempty matches on empty text strings
+AppRequests
+| where isempty( AppRoleName )
+| count
+
+// Example 4 - Using isEmpty to supply missing text
+AppRequests
+| where TimeGenerated >= ago(1h)
+| take 1000
+| extend AppRoleNameComplete = iif( isempty(AppRoleName)
+                                  , "No App Role Name"
+                                  , AppRoleName
+                                  )
+| project TimeGenerated
+        , AppRoleName
+        , AppRoleNameComplete
+
+

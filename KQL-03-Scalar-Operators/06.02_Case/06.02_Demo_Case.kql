@@ -1,0 +1,65 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Case
+//
+// The demos in this post are part of my blog post, Fun With KQL - Case
+// https
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Case Basics
+Perf
+| where CounterName == "% Free Space"
+| take 100
+| extend FreeLevel = case( CounterValue < 10, "Critical"
+                         , CounterValue < 30, "Danger"
+                         , CounterValue < 50, "Look at it"
+                         , "You're OK!"
+                         )
+| project Computer
+        , CounterName
+        , CounterValue
+        , FreeLevel
+
+// Example 2 - Summarizing
+Perf
+| where CounterName == "% Free Space"
+| extend FreeLevel = case( CounterValue < 10, "Critical (Less than 10% free disk space)"
+                         , CounterValue < 30, "Danger (10% to 30% free disk space)"
+                         , CounterValue < 50, "Look at it (30% to 50% free disk space)"
+                         , "You're OK! (More than 50% free disk space)"
+                         )
+| summarize ComputerCount=count()
+         by FreeLevel
+
+// Example 3 - Dates
+Perf
+| where CounterName == "% Processor Time"
+    and CounterValue > 0
+| take 20
+| project TimeGenerated
+        , Computer
+| extend MonthNumber = datetime_part("month", TimeGenerated)
+| extend MonthName = case( MonthNumber ==  1, "Jan"
+                         , MonthNumber ==  2, "Feb"
+                         , MonthNumber ==  3, "Mar"
+                         , MonthNumber ==  4, "Apr"
+                         , MonthNumber ==  5, "May"
+                         , MonthNumber ==  6, "Jun"
+                         , MonthNumber ==  7, "Jul"
+                         , MonthNumber ==  8, "Aug"
+                         , MonthNumber ==  9, "Sep"
+                         , MonthNumber == 10, "Oct"
+                         , MonthNumber == 11, "Nov"
+                         , MonthNumber == 12, "Dec"
+                         , "Unknown"
+                         )
+| project TimeGenerated
+        , Computer
+        , MonthName
+        , NiceDate = strcat(MonthName, " ", format_datetime(TimeGenerated, "d, yyyy") )
