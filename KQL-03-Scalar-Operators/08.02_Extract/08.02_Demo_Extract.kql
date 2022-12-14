@@ -1,0 +1,38 @@
+//------------------------------------------------------------------------------
+// Fun With KQL - Extract
+//
+// The demos in this post are part of my blog post, Fun With KQL - Extract
+// https
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Extract Basics
+Perf
+| where ObjectName == "LogicalDisk"
+    and InstanceName matches regex "[A-Z]:"
+| take 20
+| project Computer
+        , CounterName
+        , DriveLetter = extract("[A-Z]:", 0, InstanceName)
+
+// Example 2 - Return part of the text
+Perf
+| where ObjectName == "LogicalDisk"
+    and InstanceName matches regex "[A-Z]:"
+| take 20
+| project Computer
+        , CounterName
+        , DriveLetterOnly = extract("([A-Z]):", 1, InstanceName)
+
+// Example 3 - Returning more than 1 character
+Perf
+| distinct Computer
+| take 20
+| project Computer
+        , extract("([A-Z]{2,4})", 1, Computer)

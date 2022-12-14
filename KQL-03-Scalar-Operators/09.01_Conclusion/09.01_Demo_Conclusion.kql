@@ -1,0 +1,49 @@
+//------------------------------------------------------------------------------
+// Combining it all
+//------------------------------------------------------------------------------
+
+// This query combines much of what we've learned in this course.
+
+// It first gets the Event table for all rows in the last year (365 days),
+// excluding the current month. We exclude the current month as since it is
+// not complete it might give misleading results
+
+// Next, it condenses the data, summarizing it to just the count of
+// items for each month
+
+// After this it sorts the rows by the calendar month
+
+// We then calculate the month number and year numbers as two new
+// columns
+
+// Next, we use a case to determine the text for the month number.
+// Because we are using a calculated column in this, we had to create
+// a new extend so KQL would know it exists.
+
+// We then create a string with the year and month name. Like the
+// above, to use a calculated column we had to do another extend as
+// the calculated column doesn't exist until the extend is complete
+
+// Finally we project only the year-month string and the event count
+Event
+| where TimeGenerated between ( ago(365d) .. startofmonth(now()) )
+| summarize EventCount = count() by calMonth=startofmonth(TimeGenerated)
+| sort by calMonth desc
+| extend MonthNumber = datetime_part("month", calMonth)
+       , YearNumber = datetime_part("year", calMonth)
+| extend MonthName = case( MonthNumber ==  1, "Jan "
+                         , MonthNumber ==  2, "Feb "
+                         , MonthNumber ==  3, "Mar "
+                         , MonthNumber ==  4, "Apr "
+                         , MonthNumber ==  5, "May "
+                         , MonthNumber ==  6, "Jun "
+                         , MonthNumber ==  7, "Jul "
+                         , MonthNumber ==  8, "Aug "
+                         , MonthNumber ==  9, "Sep "
+                         , MonthNumber == 10, "Oct "
+                         , MonthNumber == 11, "Nov "
+                         , MonthNumber == 12, "Dec "
+                         , "Unknown Month"
+                         )
+| extend YearMonth = strcat( MonthName, " - ", YearNumber)
+| project YearMonth, EventCount
