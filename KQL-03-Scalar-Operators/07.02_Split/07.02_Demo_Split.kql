@@ -1,0 +1,60 @@
+// Example 1 - Split CounterPath on its \
+Perf
+| take 100
+| project CounterPath
+        , CPSplit = split(CounterPath, "\\")
+        , CounterName
+        , CounterValue
+        , Computer
+
+// Problem is it leaves an empty spot in the array because the path starts with \\
+// We can get rid of the double \\ by doing a parse.
+// Note because \ is an escape character, we need to use two to represent each
+// backslash. So \\\\ amounts to \\
+Perf
+| take 100
+| parse CounterPath with "\\\\" ParsedCounterPath
+| project CounterPath
+        , ParsedCounterPath
+        , PCPSplit = split(ParsedCounterPath, "\\")
+        , Computer
+        , CounterName
+        , CounterValue
+
+// An option third parameter lets you extract a component of the split array
+// into single item arrays
+Perf
+| take 100
+| parse CounterPath with "\\\\" ParsedCounterPath
+| extend myComputer = split(ParsedCounterPath, "\\", 0)
+       , myObjectInstance = split(ParsedCounterPath, "\\", 1)
+       , myCounterName = split(ParsedCounterPath, "\\", 2)
+| project ParsedCounterPath
+        , myComputer
+        , myObjectInstance
+        , myCounterName
+        , Computer
+        , ObjectName
+        , CounterName
+        , InstanceName
+
+// Problem is all you have is a bunch of single item arrays.
+
+// A better method though is to convert into a single array then
+// convert into individual items
+Perf
+| take 100
+| parse CounterPath with "\\\\" ParsedCounterPath
+| extend CounterPathArray = split(ParsedCounterPath, "\\")
+| extend myComputer = CounterPathArray[0]
+       , myObjectInstance = CounterPathArray[1]
+       , myCounterName = CounterPathArray[2]
+| project ParsedCounterPath
+        , myComputer
+        , myObjectInstance
+        , myCounterName
+        , Computer
+        , ObjectName
+        , CounterName
+        , InstanceName
+
