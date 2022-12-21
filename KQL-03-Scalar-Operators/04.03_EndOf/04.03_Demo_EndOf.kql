@@ -1,17 +1,3 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - EndOf...
-//
-// The demos in this post are part of my blog post, Fun With KQL - EndOf
-// https
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
 // Example 1 - EndOf basics
 Perf
 | where TimeGenerated >= startofyear( now() )
@@ -23,11 +9,11 @@ Perf
         , CounterName
         , CounterValue
 
-// Calculating startof last year
-print startofyear(now(-365d))
+// Calculating endof last year
+print endofyear(now(-365d))
 
 // To go back 2 years, just multiply 365 by 2 (or however many years you need)
-print startofyear(now(-730d))
+print endofyear(ago(730d))
 
 // Example 2 - Summarizing by EndOf Day
 Perf
@@ -57,7 +43,7 @@ Perf
 
 // Example 4 - EndOfYear
 Perf
-| where TimeGenerated >= startofyear( now(-768d) )
+| where TimeGenerated >= startofyear( ago(768d) )
 | extend YearGenerated = endofyear(TimeGenerated)
 | project TimeGenerated
         , YearGenerated

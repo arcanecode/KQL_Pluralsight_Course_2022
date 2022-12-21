@@ -1,23 +1,8 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - DateTime Arithmetic
-//
-// The demos in this post are part of my blog post,
-// Fun With KQL - DateTime Arithmetic
-// https
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
 // Example 1 - DateTime Arithmetic Basics
 Perf
 | where CounterName == "Avg. Disk sec/Read"
-| where CounterValue > 0
-| take 100                       // done just to give us a small dataset to demo
+| where TimeGenerated > ago(1d)
+| take 10
 | extend HowLongAgo=( now() - TimeGenerated )
        , RightNow = now()
 | project TimeGenerated
@@ -30,8 +15,8 @@ Perf
 // Example 2 - Time since a set date
 Perf
 | where CounterName == "Avg. Disk sec/Read"
-| where CounterValue > 0
-| take 100                       // done just to give us a small dataset to demo
+| where TimeGenerated > ago(1d)
+| take 10
 | extend HowLongAgo=( now() - TimeGenerated )
        , TimeSinceStartOfYear=( TimeGenerated - datetime(2022-01-01) )
        , RightNow = now()
@@ -60,11 +45,18 @@ Perf
         , TimeSinceStartOfYearInHours
 
 // Example 4 - DateTime Arithmetic on Columns
-Alert
+Perf
 | take 100
-| extend QueryExecutionTime = (QueryExecutionEndTime - QueryExecutionStartTime)
-| project QueryExecutionStartTime
-        , QueryExecutionEndTime
-        , QueryExecutionTime
+| extend BucketTime = (BucketEndTime - BucketStartTime)
+| project TimeGenerated
+        , BucketTime
+        , CounterName
+        , CounterValue
+
+Usage
+| take 100
+| project TimeGenerated
+        , StartTime
+        , EndTime
+        , ElapsedTime = (EndTime - StartTime)
         , Computer
-        , AlertState

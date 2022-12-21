@@ -1,17 +1,3 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - StartOf...
-//
-// The demos in this post are part of my blog post, Fun With KQL - StartOf
-// https
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
 // Example 1 - StartOf basics
 Perf
 | where TimeGenerated >= startofyear( now() )
@@ -27,9 +13,9 @@ Perf
 print startofyear(now(-365d))
 
 // To go back 2 years, just multiply 365 by 2 (or however many years you need)
-print startofyear(now(-730d))
+print startofyear(ago(730d))
 
-// Example 2 - Summarizing by StartOf Day
+// Example 2 - Summarizing Log Count by StartOf Day
 Perf
 | where TimeGenerated >= startofyear( now() )
 | extend DayGenerated = startofday(TimeGenerated)

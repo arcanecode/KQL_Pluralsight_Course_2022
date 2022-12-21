@@ -1,18 +1,23 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - Between
-//
-// The demos in this post are part of my blog post, Fun With KQL - Between
-// https
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
+// Example 1 - Between with Dates
+Perf
+| where CounterName == "% Free Space"
+| take 100
+| where TimeGenerated between ( datetime(2022-12-01) .. datetime(2022-12-22) )
+| project TimeGenerated
+        , CounterName
+        , CounterValue
 
-// Example 1 - Between Basics
+
+// Example 2 - Between with Dynamic Dates
+Perf
+| where CounterName == "% Free Space"
+| take 100
+| where TimeGenerated between ( ago(7d) .. now() )
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+
+// Example 3 - Between with Values
 Perf
 | where CounterName == "% Free Space"
 | take 100
@@ -21,23 +26,6 @@ Perf
         , CounterName
         , CounterValue
 
-// Example 2 - Between with Dates
-Perf
-| where CounterName == "% Free Space"
-| take 100
-| where TimeGenerated between ( datetime(2022-04-12) .. datetime(2022-04-18) )
-| project TimeGenerated
-        , CounterName
-        , CounterValue
-
-// Example 3 - Between with Dynamic Dates
-Perf
-| where CounterName == "% Free Space"
-| take 100
-| where TimeGenerated between ( ago(7d) .. now() )
-| project TimeGenerated
-        , CounterName
-        , CounterValue
 
 // Example 4 - Not Between
 Perf
