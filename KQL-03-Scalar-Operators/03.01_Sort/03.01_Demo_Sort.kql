@@ -1,17 +1,3 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - Sort
-//
-// The demos in this post are part of my blog post, Fun With KQL - Sort
-// https
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
 // Example 1 - Sort Basics
 Perf
 | where TimeGenerated > ago(15m)

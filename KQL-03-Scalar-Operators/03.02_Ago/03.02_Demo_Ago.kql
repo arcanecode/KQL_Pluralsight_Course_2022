@@ -1,45 +1,31 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - Ago
-//
-// The demos in this post are part of my blog post, Fun With KQL - Ago
-// https://arcanecode.com/2022/07/11/fun-with-kql-ago/
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
 // Example 1 - Ago Basics
-print now(), ago(1d)
+print ago(1h)
+
 
 // Example 2 - Ago Timespans
-print RightNow        = now()
-    , OneDay          = ago(1d)
-    , OneHour         = ago(1h)
-    , OneMinute       = ago(1m)
-    , OneSecond       = ago(1s)
-    , OneMilliseconds = ago(1ms)
-    , OneMicroseond   = ago(1microsecond)
+print OneDay          = ago(1d)            // d = Day
+    , OneHour         = ago(1h)            // h = Hour
+    , OneMinute       = ago(1m)            // m = Minute
+    , OneSecond       = ago(1s)            // s = Second
+    , OneMilliseconds = ago(1ms)           // ms = Millisecond
+    , OneMicroseond   = ago(1microsecond)  // microsecond
+    , OneTick         = ago(1tick)         // tick = 100 nanoseconds
 
-// Example 3 - Ago vs Now
-print RightNow = now()
-    , Future   = now(1d)
-    , Past     = ago(1d)
 
-// Example 4 - Ago vs Now Multiple Days
-print RightNow = now()
-    , Future   = now(2d)
-    , Past     = ago(2d)
+// Example 3 - Different ways for the same time range
+print OneDay          = ago(1d)      // 1 day
+    , OneHour         = ago(24h)     // 1 day = 24 hours
+    , OneMinute       = ago(1440m)   // 1 day = 1,440 minutes
+    , OneSecond       = ago(86400s)  // 1 day = 86,400 seconds
 
-// Example 5 - Ago in Queries
+
+// Example 4 - Ago in Queries
 Perf
 | where TimeGenerated >= ago(1h)
-| extend RightNow = now()
 | take 10
 
-// Example 6 - Simulate Now with Ago
-print RightNow = now()
-    , AlsoRightNow = ago(0d)
+
+// Example 5 - Multiple days
+Perf
+| where TimeGenerated >= ago(365d)
+| take 10

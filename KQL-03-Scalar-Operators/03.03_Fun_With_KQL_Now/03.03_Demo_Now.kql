@@ -1,17 +1,3 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - Now
-//
-// The demos in this post are part of my blog post, Fun With KQL - Now
-// https://arcanecode.com/2022/07/04/fun-with-kql-now/
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
 // Example 1 - Now Basics
 print now()
 
@@ -20,7 +6,17 @@ print RightNow = now()
     , TwoDaysAgo = now(-2d)
     , FourHoursFromNow = now(4h)
 
-// Example 3 - Now in a Query
+// Example 3 - Ago vs Now
+print RightNow = now()
+    , Future   = now(1d)
+    , Past     = ago(1d)
+
+// Example 4 - Ago vs Now
+print RightNow = now()
+    , PastNow  = now(-1d)
+    , PastAgo  = ago(1d)
+
+// Example 5 - Now in a Query
 Perf
 | where CounterName == "Free Megabytes"
 | where CounterValue > 0
