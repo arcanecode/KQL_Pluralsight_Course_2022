@@ -1,17 +1,3 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - 
-//
-// The demos in this post are part of my blog post, Fun With KQL - 
-// https
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
 // Example 1
 // Sample Tag Entry:
 //   {"vm.azm.ms/mountId":"C:","vm.azm.ms/diskSizeMB":129545.99609375}
@@ -29,7 +15,8 @@ InsightsMetrics
         , ExtProps["vm.azm.ms/diskSizeMB"]
 
 
-/ Example 2 - More Json Fields
+
+// Example 2 - More Json Fields
 // Sample Tag Entry:
 // {"container.azm.ms/clusterId":"/subscriptions/ebb79bc0-aa86-44a7-8111-cabbe0c43993/resourceGroups/CH1-ContosoSH360ClusterRG/providers/Microsoft.ContainerService/managedClusters/CH1-ContosoSH360Cluster","container.azm.ms/clusterName":"CH1-ContosoSH360Cluster","hostName":"aks-linuxpool-35280019-vmss000001","name":"sdb1"}
 InsightsMetrics
@@ -43,6 +30,7 @@ InsightsMetrics
         , ClusterName = ExtProps["container.azm.ms/clusterName"]
         , HostName = ExtProps["hostName"]
         , Name = ExtProps["name"]
+
 
 // Example 3 - Property Notation
 InsightsMetrics

@@ -1,17 +1,3 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - Parse
-//
-// The demos in this post are part of my blog post, Fun With KQL - Parse
-// https
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
 // Example 1 - Parse Basics
 AppRequests
 | take 100
@@ -19,6 +5,7 @@ AppRequests
 | project TimeGenerated
         , Name
         , ParsedGet
+
 
 // Example 2 - Multicolumn Parse
 FunctionAppLogs
@@ -33,7 +20,8 @@ FunctionAppLogs
                      ", Duration=" Duration
                      ")" NoOutputHere
 
-// Example 3 - When You Can't Use Parse
+
+// Example 3 - When You Can't Use Parse - Inconsistent data
 FunctionAppLogs
 | where Category == "Function.Function2"
 | take 100
