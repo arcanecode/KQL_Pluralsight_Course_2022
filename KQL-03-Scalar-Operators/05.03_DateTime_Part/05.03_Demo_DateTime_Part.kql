@@ -1,18 +1,3 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - DateTime_Part
-//
-// The demos in this post are part of my blog post, Fun With KQL - DateTime_Part
-// https
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
-
 // Example 1 - DateTime_Part Basics
 Perf
 | take 100                       // done just to give us a small dataset to demo
