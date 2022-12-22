@@ -1,19 +1,4 @@
-//------------------------------------------------------------------------------
-// Fun With KQL -
-//
-// The demos in this post are part of my blog post, Fun With KQL -
-// https
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
-// strcat is used to combine fields together
-
+// Example 1 - strcat is used to combine fields together
 Perf
 | take 100
 | extend CompObjCounter = strcat(Computer, " - ", ObjectName, " - ", CounterName)
@@ -24,7 +9,7 @@ Perf
         , CounterName
         , CounterValue
 
-// Use strcat with case and datetime_part to get month names
+// Example 2 - Use strcat with case and datetime_part to get month names
 Perf
 | where CounterName == "% Free Space"
 | where TimeGenerated between ( ago(365d) .. now() )

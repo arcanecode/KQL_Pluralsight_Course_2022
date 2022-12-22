@@ -1,0 +1,61 @@
+//------------------------------------------------------------------------------
+// String Operators
+//------------------------------------------------------------------------------
+
+// The following string operators were seen in the a previous course:
+// startswith
+// endswith
+// has
+// hasprefix
+// hassuffix
+// contains
+// matches regex
+
+// Most of these have case sensitive versions that end in _cs
+
+// Example 1 - Without case sensitive
+Perf
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+| where CounterName contains "BYTES"
+| take 100
+
+
+// Example 2 - With case senstive
+Perf
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+| where CounterName contains_cs "BYTES"
+| take 100
+
+
+// Example 3 - These also have a "NOT" version
+Perf
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+| where CounterName !contains "Bytes"
+| take 100
+
+
+// Example 4 - in - used to compare a column to a set of values
+Perf
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+| where CounterName in ("Disk Transfers/sec", "Disk Reads/sec", "Avg. Disk sec/Write")
+| take 100
+
+
+// Example 5 - Also has a NOT version
+Perf
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+| where CounterName !in ( "Disk Transfers/sec"
+                        , "Disk Reads/sec"
+                        , "Avg. Disk sec/Write"
+                        )
+| take 100
