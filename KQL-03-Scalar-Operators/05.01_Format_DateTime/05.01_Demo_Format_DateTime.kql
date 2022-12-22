@@ -1,15 +1,18 @@
+// Example 1 - Format_DateTime Basics
 Perf
-| take 100                       // done just to give us a small dataset to demo
+| where TimeGenerated >= ago(60d)
+| take 100
 | project TimeGenerated
-        , format_datetime(TimeGenerated, "y-M-d")
-        , format_datetime(TimeGenerated, "yyyy-MM-dd")
-        , format_datetime(TimeGenerated, "MM/dd/yyyy")
-        , format_datetime(TimeGenerated, "MM/dd/yyyy hh:mm:ss tt")
-        , format_datetime(TimeGenerated, "MM/dd/yyyy HH:mm:ss")
-        , format_datetime(TimeGenerated, "MM/dd/yyyy HH:mm:ss.ffff")
+        , D1 = format_datetime(TimeGenerated, "y-M-d")
+        , D2 = format_datetime(TimeGenerated, "yyyy-MM-dd")
+        , D3 = format_datetime(TimeGenerated, "MM/dd/yyyy")
+        , T1 = format_datetime(TimeGenerated, "MM/dd/yyyy hh:mm:ss tt")
+        , T2 = format_datetime(TimeGenerated, "MM/dd/yyyy HH:mm:ss")
+        , T3 = format_datetime(TimeGenerated, "MM/dd/yyyy HH:mm:ss.ffff")
         , CounterName
         , CounterValue
 
+//------------------------------------------------------------------------------
 // Supported syntax - one letter is single number, two letters two numbers
 //    d - Day, 1 to 31
 //   dd - Day, 01 to 31
@@ -38,6 +41,8 @@ Perf
 
 // You can use these as separators:
 // / - : , . _ [ ] and a space
+//------------------------------------------------------------------------------
+
 
 // Example 2 - Separating Date and Time
 Perf
@@ -45,5 +50,19 @@ Perf
 | project TimeGenerated
         , TheDate = format_datetime(TimeGenerated, "yyyy-MM-dd")
         , TheTime = format_datetime(TimeGenerated, "hh:mm:ss tt")
+        , CounterName
+        , CounterValue
+
+
+// Example 3 - Breaking into component parts
+Perf
+| take 20
+| project TimeGenerated
+        , Year   = format_datetime(TimeGenerated, "yyyy")
+        , Month  = format_datetime(TimeGenerated, "MM")
+        , Day    = format_datetime(TimeGenerated, "dd")
+        , Hour   = format_datetime(TimeGenerated, "HH")
+        , Minute = format_datetime(TimeGenerated, "mm")
+        , Second = format_datetime(TimeGenerated, "ss")
         , CounterName
         , CounterValue

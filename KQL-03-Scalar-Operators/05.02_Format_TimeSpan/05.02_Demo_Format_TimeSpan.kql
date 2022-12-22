@@ -1,0 +1,80 @@
+// Example 1 - Format_Timespan Basics
+Perf
+| where TimeGenerated between ( ago(7d) .. now() )
+| take 100
+| extend TimeGen = now() - TimeGenerated
+| project TimeGenerated
+        , TimeGen
+        , TS1 = format_timespan(TimeGen, "dd:hh:mm:ss")
+        , TS2 = format_timespan(TimeGen, "dd HH:mm:ss")
+        , TS3 = format_timespan(TimeGen, "d h:m:s")
+        , TS4 = format_timespan(TimeGen, "d H:m:s")
+        , CounterName
+        , CounterValue
+
+//------------------------------------------------------------------------------
+// Formatting placeholders
+//  d - Days, number of d's indicates how many 0s to use
+//  H - Hour, 1 to 23 (24 hour clock)
+// HH - Hour, 01 to 23 (24 hour clock)
+//  m - Minute, 0 to 59
+// mm - Minute, 00 to 59
+//  s - Second, 0 to 59
+// ss - Second, 00 to 59
+//  f - Sub-second
+//  F - Sub-second for non-zero vales
+//
+// Note that the 12 hour clock format of `h` (lowercase h's) is not valid.
+// This function measures the number of elapsed hours, not the time of the day.
+//
+// There's also an assortment of separator characters we can use to separate the
+// individual parts of our timespan, namely the days, hours, minutes and so on.
+//
+// You can use these as separators:
+// / - : , . _ [ ] and a space
+//------------------------------------------------------------------------------
+
+
+// Example 2 - Formatting Examples
+Perf
+| where TimeGenerated between ( ago(7d) .. now() )
+| take 20
+| extend TimeGen = endofweek(now()) - TimeGenerated
+| project TimeGenerated
+        , TimeGen
+        , TS01 = format_timespan(TimeGen, "d HH:mm:ss.f")
+        , TS02 = format_timespan(TimeGen, "d HH:mm:ss.F")
+        , TS03 = format_timespan(TimeGen, "dd - HH:mm:ss.ff")
+        , TS04 = format_timespan(TimeGen, "dd - HH:mm:ss.FF")
+        , TS05 = format_timespan(TimeGen, "ddd, HH:mm:ss.fff")
+        , TS06 = format_timespan(TimeGen, "ddd, HH:mm:ss.FFF")
+        , TS07 = format_timespan(TimeGen, "dddd_HH:mm:ss.ffff")
+        , TS08 = format_timespan(TimeGen, "dddd_HH:mm:ss.FFFF")
+        , TS09 = format_timespan(TimeGen, "ddddd HH:mm:ss [fffff]")
+        , TS10 = format_timespan(TimeGen, "ddddd HH:mm:ss [FFFFF]")
+        , TS11 = format_timespan(TimeGen, "dddddd HH:mm:ss.ffffff")
+        , TS12 = format_timespan(TimeGen, "dddddd HH:mm:ss.FFFFFF")
+        , TS13 = format_timespan(TimeGen, "ddddddd / HH:mm:ss.fffffff")
+        , TS14 = format_timespan(TimeGen, "ddddddd / HH:mm:ss.FFFFFFF")
+        , CounterName
+        , CounterValue
+
+
+// Example 3 - Using format_timespan with strcat to make sentences
+Perf
+| take 20
+| extend TimeGen = endofweek(now()) - TimeGenerated
+| project TimeGenerated
+        , TimeGen
+        , AsText = strcat( "The calculated timespan is "
+                         , format_timespan(TimeGen, "dd")
+                         , " days, "
+                         , format_timespan(TimeGen, "HH")
+                         , " hours, "
+                         , format_timespan(TimeGen, "mm")
+                         , " minutes, and "
+                         , format_timespan(TimeGen, "ss.ff")
+                         , " seconds."
+                         )
+        , CounterName
+        , CounterValue
