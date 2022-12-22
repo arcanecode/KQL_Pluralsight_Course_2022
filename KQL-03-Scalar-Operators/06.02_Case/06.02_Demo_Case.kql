@@ -1,17 +1,3 @@
-//------------------------------------------------------------------------------
-// Fun With KQL - Case
-//
-// The demos in this post are part of my blog post, Fun With KQL - Case
-// https
-//
-// Copyright (c) 2018, 2022
-// All rights reserved. This code may be used in part within your own
-// applications.
-//
-// All demos are licensed under the MIT license. No warranty is provided.
-// Use at your own risk and discretion.
-//------------------------------------------------------------------------------
-
 // Example 1 - Case Basics
 Perf
 | where CounterName == "% Free Space"
@@ -41,10 +27,12 @@ Perf
 Perf
 | where CounterName == "% Processor Time"
     and CounterValue > 0
-| take 20
+| where TimeGenerated >= startofyear( now() )
+| take 100
 | project TimeGenerated
         , Computer
 | extend MonthNumber = datetime_part("month", TimeGenerated)
+       , YearNumber =  datetime_part("year", TimeGenerated)
 | extend MonthName = case( MonthNumber ==  1, "Jan"
                          , MonthNumber ==  2, "Feb"
                          , MonthNumber ==  3, "Mar"
@@ -59,7 +47,11 @@ Perf
                          , MonthNumber == 12, "Dec"
                          , "Unknown"
                          )
-| project TimeGenerated
-        , Computer
+| summarize MonthCount = count()
+         by Computer, YearNumber, MonthName
+| project Computer
+        , MonthCount
+        , YearNumber
         , MonthName
-        , NiceDate = strcat(MonthName, " ", format_datetime(TimeGenerated, "d, yyyy") )
+        , MonthYear = strcat(MonthName, " ", YearNumber )
+        , YearMonth = strcat(YearNumber, " - ", MonthName )
