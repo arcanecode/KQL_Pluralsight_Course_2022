@@ -4,7 +4,7 @@
 
 // This query combines much of what we've learned in this course.
 
-// It first gets the Event table for all rows in the last year (365 days),
+// It first gets the Perf table for all rows in the last year (365 days),
 // excluding the current month. We exclude the current month as since it is
 // not complete it might give misleading results
 
@@ -25,12 +25,12 @@
 // the calculated column doesn't exist until the extend is complete
 
 // Finally we project only the year-month string and the event count
-Event
+Perf
 | where TimeGenerated between ( ago(365d) .. startofmonth(now()) )
-| summarize EventCount = count() by calMonth=startofmonth(TimeGenerated)
-| sort by calMonth desc
-| extend MonthNumber = datetime_part("month", calMonth)
-       , YearNumber = datetime_part("year", calMonth)
+| summarize PerfCount = count() by dateOfStartOfMonth = startofmonth(TimeGenerated)
+| sort by dateOfStartOfMonth desc
+| extend MonthNumber = datetime_part("month", dateOfStartOfMonth)
+       , YearNumber = datetime_part("year", dateOfStartOfMonth)
 | extend MonthName = case( MonthNumber ==  1, "Jan "
                          , MonthNumber ==  2, "Feb "
                          , MonthNumber ==  3, "Mar "
@@ -46,4 +46,4 @@ Event
                          , "Unknown Month"
                          )
 | extend YearMonth = strcat( MonthName, " - ", YearNumber)
-| project YearMonth, EventCount
+| project YearMonth, PerfCount
