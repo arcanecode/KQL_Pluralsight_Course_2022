@@ -1,0 +1,92 @@
+//------------------------------------------------------------------------------
+// Kusto Query Language: Operators
+// Demo - Project
+//
+// The demos in this folder are part of my Pluralsight course,
+//   Kusto Query Language: Operators
+//
+// A full list of my Pluralsight Courses can be found at:
+//   https://arcanecode.com/info/
+//
+// You can find additional information at my blog post, linked below.
+//
+// Fun With KQL - Project
+// https://arcanecode.com/2022/05/30/fun-with-kql-project/
+//
+// Copyright (c) 2018, 2022
+// All rights reserved. This code may be used in part within your own
+// applications.
+//
+// All demos are licensed under the MIT license. No warranty is provided.
+// Use at your own risk and discretion.
+//------------------------------------------------------------------------------
+
+// Example 1 - Project Basics
+Perf
+| take 100
+| project ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+        , TimeGenerated
+
+
+// Example 2 - Project and Extend
+Perf
+| where CounterName == "Free Megabytes"
+| take 100
+| project ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+        , TimeGenerated
+| extend FreeGB = CounterValue / 1000
+       , FreeMB = CounterValue
+       , FreeKB = CounterValue * 1000
+
+
+// Example 3 - Using Projected Columns In Calculations
+Perf
+| where CounterName == "Free Megabytes"
+| take 100
+| extend FreeGB = CounterValue / 1000
+       , FreeMB = CounterValue
+       , FreeKB = CounterValue * 1000
+| project ObjectName
+        , CounterName
+        , InstanceName
+        , TimeGenerated
+        , FreeGB
+        , FreeKB
+        , FreeMB
+
+
+// Example 4 - Projecting Calculated Values
+Perf
+| where CounterName == "Free Megabytes"
+| take 100
+| project ObjectName
+        , CounterName
+        , InstanceName
+        , TimeGenerated
+        , FreeGB = CounterValue / 1000
+        , FreeMB = CounterValue
+        , FreeKB = CounterValue * 1000
+
+
+// Example 5 - Recordset Sizes
+Perf
+| where CounterName == "Free Megabytes"
+| take 100
+| project ObjectName
+        , CounterName
+        , InstanceName
+        , CounterValue
+        , TimeGenerated
+| project ObjectName
+        , CounterName
+        , InstanceName
+        , TimeGenerated
+        , FreeGB = CounterValue / 1000
+        , FreeMB = CounterValue
+        , FreeKB = CounterValue * 1000
