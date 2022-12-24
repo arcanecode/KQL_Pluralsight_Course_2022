@@ -1,0 +1,59 @@
+// Example 1 - Now Basics
+print now()
+
+
+// Example 2 - Now with an Offset
+print RightNow = now()
+    , FourHoursFromNow = now(4h)
+    , TwoDaysAgo = now(-2d)
+
+
+// Example 3 - Now Timespans
+print OneDay          = now(1d)            // d = Day
+    , OneHour         = now(1h)            // h = Hour
+    , OneMinute       = now(1m)            // m = Minute
+    , OneSecond       = now(1s)            // s = Second
+    , OneMilliseconds = now(1ms)           // ms = Millisecond
+    , OneMicroseond   = now(1microsecond)  // microsecond
+    , OneTick         = now(1tick)         // tick = 100 nanoseconds
+
+
+// Example 4 - Ago vs Now
+print RightNow = now()
+    , Future   = now(1d)
+    , Past     = ago(1d)
+
+
+// Example 5 - Ago vs Now
+print RightNow = now()
+    , PastNow  = now(-1d)
+    , PastAgo  = ago(1d)
+
+
+// Example 6 - Now in a Query
+Perf
+| where CounterName == "Free Megabytes"
+| where CounterValue > 0
+| take 10
+| extend HowLongAgo=( now() - TimeGenerated )
+| project TimeGenerated
+        , CurrentTime = now()
+        , HowLongAgo
+        , Computer
+        , CounterName
+        , CounterValue
+
+
+// Example 7 - Now in a Query with Time Bug Mitigation
+Perf
+| where CounterName == "Free Megabytes"
+| where CounterValue > 0
+| take 10
+| extend CurrentTime = now()
+| extend HowLongAgo=( CurrentTime - TimeGenerated )
+| project TimeGenerated
+        , CurrentTime
+        , HowLongAgo
+        , Computer
+        , CounterName
+        , CounterValue
