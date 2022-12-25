@@ -1,7 +1,7 @@
 // Example 1 - StartOf basics
 Perf
 | where TimeGenerated >= startofyear( now() )
-| take 1000
+| take 10
 | extend DayGenerated = startofday(TimeGenerated)
 | project TimeGenerated
         , DayGenerated
@@ -9,11 +9,14 @@ Perf
         , CounterName
         , CounterValue
 
-// Calculating startof last year
-print startofyear(now(-365d))
 
-// To go back 2 years, just multiply 365 by 2 (or however many years you need)
-print startofyear(ago(730d))
+// Calculating startof last year
+print startofyear(ago(365d))
+
+
+// To go forward 2 years, just multiply 365 by 2 (or however many years you need)
+print startofyear(now(730d))
+
 
 // Example 2 - Summarizing Log Count by StartOf Day
 Perf
@@ -28,6 +31,7 @@ Perf
 | sort by Computer asc
         , DayGenerated asc
 
+
 // Example 3 - StartOfMonth
 Perf
 | where TimeGenerated >= startofyear( now() )
@@ -40,6 +44,7 @@ Perf
           , Computer
 | sort by Computer asc
         , MonthGenerated asc
+
 
 // Example 4 - StartOfYear
 Perf

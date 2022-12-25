@@ -3,60 +3,76 @@ Perf
 | where CounterName == "Avg. Disk sec/Read"
 | where TimeGenerated > ago(1d)
 | take 10
-| extend HowLongAgo=( now() - TimeGenerated )
-       , RightNow = now()
+| extend RightNow = now()
 | project TimeGenerated
         , RightNow
-        , HowLongAgo
+        , HowLongAgo = ( RightNow - TimeGenerated )
         , Computer
         , CounterName
         , CounterValue
+
 
 // Example 2 - Time since a set date
 Perf
 | where CounterName == "Avg. Disk sec/Read"
-| where TimeGenerated > ago(1d)
+| where TimeGenerated > ago(7d)
 | take 10
-| extend HowLongAgo=( now() - TimeGenerated )
-       , TimeSinceStartOfYear=( TimeGenerated - datetime(2022-01-01) )
+| extend TimeSinceNewServices=( TimeGenerated - datetime(2022-11-03) )  // If no time supplied then datetime() defaults to midnight
        , RightNow = now()
 | project TimeGenerated
         , RightNow
-        , HowLongAgo
-        , TimeSinceStartOfYear
+        , HowLongAgo = ( RightNow - TimeGenerated )
+        , TimeSinceNewServices
         , Computer
         , CounterName
         , CounterValue
 
-// Example 3 - Calculating in a specific timespan unit
+// Timespan Arithmetic requires two datetime datatypes
+// TimeGenerated is already a datetime data type
+// 2022-01-01 is numeric value
+// "2022-01-01" is a string
+// Thus the need for datetime() to convert a value to a datetime datatype
+
+// Example 3 - Datetime can also accept a string value
 Perf
 | where CounterName == "Avg. Disk sec/Read"
-| where CounterValue > 0
-| take 100                       // done just to give us a small dataset to demo
-| extend HowLongAgo=( now() - TimeGenerated )
-       , TimeSinceStartOfYear=( TimeGenerated - datetime(2022-01-01) )
+| where TimeGenerated > ago(7d)
+| take 10
+| extend TimeSinceNewProduct=( TimeGenerated - datetime("2022-11-03") )
+       , RightNow = now()
+| project TimeGenerated
+        , RightNow
+        , HowLongAgo = ( RightNow - TimeGenerated )
+        , TimeSinceNewProduct
+        , Computer
+        , CounterName
+        , CounterValue
+
+
+// Example 4 - Calculating in a specific timespan unit
+Perf
+| where CounterName == "Avg. Disk sec/Read"
+| where TimeGenerated > ago(7d)
+| take 10
+| extend TimeSinceStartOfYear=( TimeGenerated - datetime(2022-01-01 10:42:33.000 AM) )
 | extend TimeSinceStartOfYearInHours=( TimeSinceStartOfYear / 1h )
 | project Computer
         , CounterName
         , CounterValue
         , TimeGenerated
-        , HowLongAgo
+        , HowLongAgo = ( now() - TimeGenerated )
         , TimeSinceStartOfYear
         , TimeSinceStartOfYearInHours
 
-// Example 4 - DateTime Arithmetic on Columns
-Perf
-| take 100
-| extend BucketTime = (BucketEndTime - BucketStartTime)
-| project TimeGenerated
-        , BucketTime
-        , CounterName
-        , CounterValue
+// Leave off AM/PM for 24 hour clock
+// Example: datetime(2022-01-01 17:42:33.000)
 
+
+// Example 5 - DateTime Arithmetic on Columns
 Usage
-| take 100
+| take 10
 | project TimeGenerated
         , StartTime
         , EndTime
-        , ElapsedTime = (EndTime - StartTime)
-        , Computer
+        , ElapsedTimeSpan = (EndTime - StartTime)
+        , Solution

@@ -9,11 +9,14 @@ Perf
         , CounterName
         , CounterValue
 
+
 // Calculating endof last year
 print endofyear(now(-365d))
 
+
 // To go back 2 years, just multiply 365 by 2 (or however many years you need)
 print endofyear(ago(730d))
+
 
 // Example 2 - Summarizing by EndOf Day
 Perf
@@ -28,6 +31,7 @@ Perf
 | sort by Computer asc
         , DayGenerated asc
 
+
 // Example 3 - EndOfMonth
 Perf
 | where TimeGenerated >= startofyear( now() )
@@ -40,6 +44,7 @@ Perf
           , Computer
 | sort by Computer asc
         , MonthGenerated asc
+
 
 // Example 4 - EndOfYear
 Perf
