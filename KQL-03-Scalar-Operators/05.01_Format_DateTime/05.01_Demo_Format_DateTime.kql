@@ -43,6 +43,13 @@ Perf
 // / - : , . _ [ ] and a space
 //------------------------------------------------------------------------------
 
+// Experiment with formats using print
+print D1 = format_datetime(now(), "y-M-d")
+    , D2 = format_datetime(now(), "yyyy-MM-dd")
+    , D3 = format_datetime(now(), "MM/dd/yyyy")
+    , T1 = format_datetime(now(), "MM/dd/yyyy hh:mm:ss tt")
+    , T2 = format_datetime(now(), "MM/dd/yyyy HH:mm:ss")
+    , T3 = format_datetime(now(), "MM/dd/yyyy HH:mm:ss.ffff")
 
 // Example 2 - Separating Date and Time
 Perf
