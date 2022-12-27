@@ -1,7 +1,7 @@
 // Example 1 - EndOf basics
 Perf
 | where TimeGenerated >= startofyear( now() )
-| take 1000
+| take 100
 | extend DayGenerated = endofday(TimeGenerated)
 | project TimeGenerated
         , DayGenerated
@@ -10,13 +10,14 @@ Perf
         , CounterValue
 
 
-// Calculating endof last year
-print endofyear(now(-365d))
-
-
-// To go back 2 years, just multiply 365 by 2 (or however many years you need)
-print endofyear(ago(730d))
-
+// Calculating endof... for various dates
+print EndOfYear = endofyear(now())
+    , EndOfLastYear = endofyear(ago(365d))
+    , EndOfCurrentMonth = endofmonth(now())
+    , EndofCurrentDay = endofday(now())
+    , EndOfCurrentWeek = endofweek(now())
+    , EndOfLastWeek = endofweek(ago(7d))
+    , EndOfNextWeek = endofweek(now(7d))
 
 // Example 2 - Summarizing by EndOf Day
 Perf

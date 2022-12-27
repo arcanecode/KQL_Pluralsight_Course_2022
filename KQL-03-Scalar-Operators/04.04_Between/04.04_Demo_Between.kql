@@ -1,14 +1,4 @@
-// Example 1 - Between with Dates
-Perf
-| where CounterName == "% Free Space"
-| take 100
-| where TimeGenerated between ( datetime(2022-12-01) .. datetime(2022-12-22) )
-| project TimeGenerated
-        , CounterName
-        , CounterValue
-
-
-// Example 2 - Between with Dynamic Dates
+// Example 1 - Between with Dynamic Dates Last 7 Days
 Perf
 | where CounterName == "% Free Space"
 | take 100
@@ -16,8 +6,74 @@ Perf
 | project TimeGenerated
         , CounterName
         , CounterValue
+s
 
-// Example 3 - Between with Values
+// Example 2 - Current Month to today
+Perf
+| where CounterName == "% Free Space"
+| take 100
+| where TimeGenerated between ( startofmonth(now()) .. now() )
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+
+
+// Example 3 - Calculating Previous Time Periods
+// Previous Year / Week / Day
+print StartOfYesterday = startofday(ago(1d))
+    , EndOfYesterday = endofday(ago(1d))
+    , StartOfLastWeek = startofweek(ago(7d))
+    , EndOfLastWeek = endofweek(ago(7d))
+    , StartOfLastYear = startofyear(ago(365d))
+    , EndOfLastYear = endofyear(ago(365d))
+
+
+// Previous Month a bit trickier
+print RightNow = now()
+    , StartOfMonthNow = startofmonth(now())
+    , StartOfMonthNowMinusOneDay = startofmonth(now()) - 1d
+    , StartOfLastMonth = startofmonth((startofmonth(now()) - 1d))
+    , EndOfLastMonth = endofmonth((startofmonth(now()) - 1d))
+
+
+// Example 4 - Between for prevous month
+Alert
+| take 100
+| extend StartOfLastMonth = startofmonth((startofmonth(now()) - 1d))
+       , EndOfLastMonth = endofmonth((startofmonth(now()) - 1d))
+| where TimeGenerated between ( StartOfLastMonth .. EndOfLastMonth )
+| project TimeGenerated
+        , StartOfLastMonth
+        , EndOfLastMonth
+        , AlertName
+        , AlertSeverity
+
+
+// Example 4 Option 2 - Compact
+Alert
+| take 100
+| where TimeGenerated between ( startofmonth((startofmonth(now()) - 1d)) .. endofmonth((startofmonth(now()) - 1d)) )
+| project TimeGenerated
+        , AlertName
+        , AlertSeverity
+
+
+// Example 4 Option 3 - Verbose
+Alert
+| take 100
+| extend lastDayOfLastMonth = startofmonth(now()) - 1d   // won't be 11:59:59.999 PM
+| extend StartOfLastMonth = startofmonth(lastDayOfLastMonth)
+       , EndOfLastMonth = endofmonth(lastDayOfLastMonth)
+| where TimeGenerated between ( StartOfLastMonth .. EndOfLastMonth )
+| project TimeGenerated
+        , StartOfLastMonth
+        , EndOfLastMonth
+        , lastDayOfLastMonth
+        , AlertName
+        , AlertSeverity
+
+
+// Example 5 - Between with Values
 Perf
 | where CounterName == "% Free Space"
 | take 100
@@ -27,7 +83,7 @@ Perf
         , CounterValue
 
 
-// Example 4 - Not Between
+// Example 6 - Not Between
 Perf
 | where CounterName == "% Free Space"
 | take 100
