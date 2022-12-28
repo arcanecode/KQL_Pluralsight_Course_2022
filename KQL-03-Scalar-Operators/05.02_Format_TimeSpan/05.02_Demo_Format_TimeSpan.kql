@@ -5,12 +5,13 @@ Perf
 | extend TimeGen = now() - TimeGenerated
 | project TimeGenerated
         , TimeGen
-        , TS1 = format_timespan(TimeGen, "dd:hh:mm:ss")
+        , TS1 = format_timespan(TimeGen, "dd.HH:mm:ss")
         , TS2 = format_timespan(TimeGen, "dd HH:mm:ss")
-        , TS3 = format_timespan(TimeGen, "d h:m:s")
+        , TS3 = format_timespan(TimeGen, "d.H:m:s")
         , TS4 = format_timespan(TimeGen, "d H:m:s")
         , CounterName
         , CounterValue
+
 
 //------------------------------------------------------------------------------
 // Formatting placeholders
@@ -34,6 +35,12 @@ Perf
 // / - : , . _ [ ] and a space
 //------------------------------------------------------------------------------
 
+// Experiment with formats using print
+print format_timespan(now() - ago(3d), "dd.HH:mm:ss")
+    , format_timespan(now() - ago(3d), "dd HH:mm:ss")
+    , format_timespan(now() - ago(3d), "d.H:m:s")
+    , format_timespan(now() - ago(3d), "d H:m:s")
+
 
 // Example 2 - Formatting Examples
 Perf
@@ -42,7 +49,7 @@ Perf
 | extend TimeGen = endofweek(now()) - TimeGenerated
 | project TimeGenerated
         , TimeGen
-        , TS01 = format_timespan(TimeGen, "d HH:mm:ss.f")
+        , TS01 = format_timespan(TimeGen, "d.HH:mm:ss.f")
         , TS02 = format_timespan(TimeGen, "d HH:mm:ss.F")
         , TS03 = format_timespan(TimeGen, "dd - HH:mm:ss.ff")
         , TS04 = format_timespan(TimeGen, "dd - HH:mm:ss.FF")
@@ -60,7 +67,23 @@ Perf
         , CounterValue
 
 
-// Example 3 - Using format_timespan with strcat to make sentences
+// Example 3 - Break into columns
+Perf
+| where TimeGenerated between ( ago(7d) .. now() )
+| take 20
+| extend TimeGen = endofweek(now()) - TimeGenerated
+| project TimeGenerated
+        , TimeGen
+        , Days       = format_timespan(TimeGen, "dd")
+        , Hours      = format_timespan(TimeGen, "HH")
+        , Minutes    = format_timespan(TimeGen, "mm")
+        , Seconds    = format_timespan(TimeGen, "ss")
+        , Subseconds = format_timespan(TimeGen, "ffff")
+        , CounterName
+        , CounterValue
+
+
+// Example 4 - Using format_timespan with strcat to make sentences
 Perf
 | take 20
 | extend TimeGen = endofweek(now()) - TimeGenerated
