@@ -1,13 +1,13 @@
 // Example 1 - DateTime_Part Basics
 Perf
-| take 100                       // done just to give us a small dataset to demo
+| take 100
 | project CounterName
         , CounterValue
         , TimeGenerated
         , year = datetime_part("year", TimeGenerated)
         , quarter = datetime_part("quarter", TimeGenerated)
         , month = datetime_part("month", TimeGenerated)
-        , weekOfYear = datetime_part("weekOfYear", TimeGenerated)
+        , weekOfYear = datetime_part("week_of_year", TimeGenerated)
         , day = datetime_part("day", TimeGenerated)
         , dayOfYear = datetime_part("dayOfYear", TimeGenerated)
         , hour = datetime_part("hour", TimeGenerated)

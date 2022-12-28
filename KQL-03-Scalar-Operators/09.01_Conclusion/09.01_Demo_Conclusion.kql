@@ -25,24 +25,30 @@
 // the calculated column doesn't exist until the extend is complete
 
 // Finally we project only the year-month string and the event count
+// If today is Dec 28, 2022 04:53:22 PM:
+// startofmonth(ago(365d))                  = Dec 1, 2021 12:00:00 AM
+// startofmonth(now())                      = Dec 1, 2022 12:00:00 AM
+// startofmonth(now()) - 1d                 = Nov 30, 2022 12:00:00 AM 
+// endofmonth( startofmonth(now()) - 1d ) ) = Nov 30, 2022 11:59:59 PM
+
 Perf
-| where TimeGenerated between ( ago(365d) .. startofmonth(now()) )
+| where TimeGenerated between ( startofmonth(ago(365d)) .. endofmonth( startofmonth(now()) - 1d ) )
 | summarize PerfCount = count() by dateOfStartOfMonth = startofmonth(TimeGenerated)
 | sort by dateOfStartOfMonth desc
 | extend MonthNumber = datetime_part("month", dateOfStartOfMonth)
        , YearNumber = datetime_part("year", dateOfStartOfMonth)
-| extend MonthName = case( MonthNumber ==  1, "Jan "
-                         , MonthNumber ==  2, "Feb "
-                         , MonthNumber ==  3, "Mar "
-                         , MonthNumber ==  4, "Apr "
-                         , MonthNumber ==  5, "May "
-                         , MonthNumber ==  6, "Jun "
-                         , MonthNumber ==  7, "Jul "
-                         , MonthNumber ==  8, "Aug "
-                         , MonthNumber ==  9, "Sep "
-                         , MonthNumber == 10, "Oct "
-                         , MonthNumber == 11, "Nov "
-                         , MonthNumber == 12, "Dec "
+| extend MonthName = case( MonthNumber ==  1, "Jan"
+                         , MonthNumber ==  2, "Feb"
+                         , MonthNumber ==  3, "Mar"
+                         , MonthNumber ==  4, "Apr"
+                         , MonthNumber ==  5, "May"
+                         , MonthNumber ==  6, "Jun"
+                         , MonthNumber ==  7, "Jul"
+                         , MonthNumber ==  8, "Aug"
+                         , MonthNumber ==  9, "Sep"
+                         , MonthNumber == 10, "Oct"
+                         , MonthNumber == 11, "Nov"
+                         , MonthNumber == 12, "Dec"
                          , "Unknown Month"
                          )
 | extend YearMonth = strcat( MonthName, " - ", YearNumber)
