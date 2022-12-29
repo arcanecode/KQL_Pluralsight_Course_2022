@@ -46,13 +46,11 @@ Perf
 | take 100
 | parse CounterPath with "\\\\" ParsedCounterPath
 | extend CounterPathArray = split(ParsedCounterPath, "\\")
-| extend myComputer = CounterPathArray[0]
-       , myObjectInstance = CounterPathArray[1]
-       , myCounterName = CounterPathArray[2]
 | project ParsedCounterPath
-        , myComputer
-        , myObjectInstance
-        , myCounterName
+        , CounterPathArray
+        , myComputer = CounterPathArray[0]
+        , myObjectInstance = CounterPathArray[1]
+        , myCounterName = CounterPathArray[2]
         , Computer
         , ObjectName
         , CounterName

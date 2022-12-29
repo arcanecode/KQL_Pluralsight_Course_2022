@@ -23,14 +23,41 @@ Perf
 | summarize ComputerCount=count()
          by FreeLevel
 
-// Example 3 - Dates
+// Example 3 - Dates - The Wrong Way
 Perf
-| where CounterName == "% Processor Time"
-    and CounterValue > 0
+| where CounterName == "% Processor Time" and CounterValue > 0
 | where TimeGenerated >= startofyear( now() )
-| take 100
-| project TimeGenerated
-        , Computer
+| project TimeGenerated, Computer
+| extend MonthNumber = datetime_part("month", TimeGenerated)
+       , YearNumber =  datetime_part("year", TimeGenerated)
+| extend MonthName = case( datetime_part("month", TimeGenerated) ==  1, "Jan "
+                         , datetime_part("month", TimeGenerated) ==  2, "Feb "
+                         , datetime_part("month", TimeGenerated) ==  3, "Mar "
+                         , datetime_part("month", TimeGenerated) ==  4, "Apr "
+                         , datetime_part("month", TimeGenerated) ==  5, "May "
+                         , datetime_part("month", TimeGenerated) ==  6, "Jun "
+                         , datetime_part("month", TimeGenerated) ==  7, "Jul "
+                         , datetime_part("month", TimeGenerated) ==  8, "Aug "
+                         , datetime_part("month", TimeGenerated) ==  9, "Sep "
+                         , datetime_part("month", TimeGenerated) == 10, "Oct "
+                         , datetime_part("month", TimeGenerated) == 11, "Nov "
+                         , datetime_part("month", TimeGenerated) == 12, "Dec "
+                         , "Unknown Month"
+                         )
+| summarize MonthCount = count()
+         by Computer, YearNumber, MonthNumber, MonthName
+| project Computer, MonthCount, YearNumber, MonthNumber
+        , YearText = strcat(YearNumber), MonthName
+        , MonthYear = strcat(MonthName, " ", YearNumber )
+        , YearMonth = strcat(YearNumber, " - ", MonthName )
+| sort by Computer, YearNumber, MonthNumber
+
+
+// Example 4 - Dates - The Right Way
+Perf
+| where CounterName == "% Processor Time" and CounterValue > 0
+| where TimeGenerated >= startofyear( now() )
+| project TimeGenerated, Computer
 | extend MonthNumber = datetime_part("month", TimeGenerated)
        , YearNumber =  datetime_part("year", TimeGenerated)
 | extend MonthName = case( MonthNumber ==  1, "Jan"
@@ -48,10 +75,9 @@ Perf
                          , "Unknown"
                          )
 | summarize MonthCount = count()
-         by Computer, YearNumber, MonthName
-| project Computer
-        , MonthCount
-        , YearNumber
-        , MonthName
+         by Computer, YearNumber, MonthNumber, MonthName
+| project Computer, MonthCount, YearNumber, MonthNumber
+        , YearText = strcat(YearNumber), MonthName
         , MonthYear = strcat(MonthName, " ", YearNumber )
         , YearMonth = strcat(YearNumber, " - ", MonthName )
+| sort by Computer, YearNumber, MonthNumber

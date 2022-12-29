@@ -9,9 +9,15 @@
 // hasprefix
 // hassuffix
 // contains
-// matches regex
+//
+// By default they are all case insenstivie.
+// Each of them though, have case sensitive versions that end in _cs, a NOT
+// version that begins with !, and a not cases senstive which begins in ! and
+// ends in _cs, for example !contains_cs
 
-// Most of these have case sensitive versions that end in _cs
+//------------------------------------------------------------------------------
+// Contains
+//------------------------------------------------------------------------------
 
 // Example 1 - Without case sensitive
 Perf
@@ -39,8 +45,20 @@ Perf
 | where CounterName !contains "Bytes"
 | take 100
 
+// Example 4 - These also have a "NOT" case sensitive version
+Perf
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+| where CounterName !contains_cs "BYTES"
+| take 100
 
-// Example 4 - in - used to compare a column to a set of values
+
+//------------------------------------------------------------------------------
+// In
+//------------------------------------------------------------------------------
+
+// Example 5 - in - used to compare a column to a set of values
 Perf
 | project TimeGenerated
         , CounterName
@@ -48,8 +66,24 @@ Perf
 | where CounterName in ("Disk Transfers/sec", "Disk Reads/sec", "Avg. Disk sec/Write")
 | take 100
 
+// Example 6 - in is case sensitive
+Perf
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+| where CounterName in ("DISK TRANSFERS/SEC", "disk reads/sec", "avg. DISK sec/Write")
+| take 100
 
-// Example 5 - Also has a NOT version
+// Example 7 - Use in~ to make it case insensitive
+Perf
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+| where CounterName in~ ("DISK TRANSFERS/SEC", "disk reads/sec", "avg. DISK sec/Write")
+| take 100
+
+
+// Example 8 - Also has a NOT version, which is case senstive
 Perf
 | project TimeGenerated
         , CounterName
@@ -58,4 +92,15 @@ Perf
                         , "Disk Reads/sec"
                         , "Avg. Disk sec/Write"
                         )
+| take 100
+
+// Example 8 - Also has a NOT case insenstive version
+Perf
+| project TimeGenerated
+        , CounterName
+        , CounterValue
+| where CounterName !in~ ( "DISK TRANSFERS/SEC"
+                         , "disk reads/sec"
+                         , "avg. disk sec/write"
+                         )
 | take 100
