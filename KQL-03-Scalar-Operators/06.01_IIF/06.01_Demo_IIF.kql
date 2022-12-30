@@ -12,25 +12,52 @@ Perf
         , FreeState
 
 
-// Example 2 - Use iif with Dates
+// Example 2 - Compact but less readable
 Perf
-| where CounterName == "% Processor Time"
-    and CounterValue > 0
+| where CounterName == "% Free Space"
+| take 100
+| project Computer
+        , CounterName
+        , CounterValue
+        , FreeState = iif( CounterValue < 70, "You might want to look at this", "You're OK!")
+
+
+// Example 3 - Use iif with Dates
+Perf
+| where CounterName == "% Processor Time" and CounterValue > 0
+| where TimeGenerated between ( ago(1h) .. now() )
 | take 10000
-| where TimeGenerated between ( ago(3h) .. now() )
 | extend RightNow = now()
-| extend AdjustedFactor = iif( datetime_part("hour", TimeGenerated) == datetime_part("hour", RightNow)
+| extend AdjustedFactor = iif( TimeGenerated between ( (RightNow - 5m) .. RightNow )
                              , "Double Weight"
                              , "Half Weight"
                              )
-       , AdjustedValue  = iif( datetime_part("hour", TimeGenerated) == datetime_part("hour", RightNow)
+       , AdjustedValue  = iif( TimeGenerated between ( (RightNow - 5m) .. RightNow )
                              , CounterValue * 2
                              , CounterValue / 2
                              )
+| project TimeGenerated, RightNow, AdjustedFactor, CounterValue
+        , AdjustedValue, Computer, CounterName
+| sort by AdjustedFactor, TimeGenerated
+
+
+// Example 4 - IIF and True/False value
+Perf
+| where CounterName == "% Processor Time" and CounterValue > 0
+| where TimeGenerated between ( ago(1h) .. now() )
+| take 10000
+| extend RightNow = now()
+| extend IsCurrentValue = ( TimeGenerated between ( (RightNow - 5m) .. RightNow ) )
+| extend AdjustedFactor = iif( IsCurrentValue == true, "Double Weight", "Half Weight")
+       , AdjustedValue  = iif( IsCurrentValue, CounterValue * 2, CounterValue / 2 )
 | project TimeGenerated
         , RightNow
+        , IsCurrentValue
         , AdjustedFactor
         , CounterValue
         , AdjustedValue
         , Computer
         , CounterName
+| sort by AdjustedFactor
+        , TimeGenerated
+ 

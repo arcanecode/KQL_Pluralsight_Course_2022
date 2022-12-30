@@ -11,6 +11,19 @@ Perf
         , CounterName
         , CounterValue
         , FreeLevel
+| sort by CounterValue asc
+
+
+// Alternate formatting
+Perf
+| where CounterName == "% Free Space"
+| take 100
+| project Computer
+        , CounterName
+        , CounterValue
+        , FreeLevel = case( CounterValue < 10, "Critical", CounterValue < 30, "Danger", CounterValue < 50, "Look at it", "You're OK!")
+| sort by CounterValue asc
+
 
 // Example 2 - Summarizing
 Perf
@@ -30,7 +43,7 @@ Perf
 | project TimeGenerated, Computer
 | extend MonthNumber = datetime_part("month", TimeGenerated)
        , YearNumber =  datetime_part("year", TimeGenerated)
-| extend MonthName = case( datetime_part("month", TimeGenerated) ==  1, "Jan "
+       , MonthName = case( datetime_part("month", TimeGenerated) ==  1, "Jan "
                          , datetime_part("month", TimeGenerated) ==  2, "Feb "
                          , datetime_part("month", TimeGenerated) ==  3, "Mar "
                          , datetime_part("month", TimeGenerated) ==  4, "Apr "
@@ -47,7 +60,8 @@ Perf
 | summarize MonthCount = count()
          by Computer, YearNumber, MonthNumber, MonthName
 | project Computer, MonthCount, YearNumber, MonthNumber
-        , YearText = strcat(YearNumber), MonthName
+        , YearText = strcat(YearNumber)
+        , MonthName
         , MonthYear = strcat(MonthName, " ", YearNumber )
         , YearMonth = strcat(YearNumber, " - ", MonthName )
 | sort by Computer, YearNumber, MonthNumber
@@ -76,8 +90,12 @@ Perf
                          )
 | summarize MonthCount = count()
          by Computer, YearNumber, MonthNumber, MonthName
-| project Computer, MonthCount, YearNumber, MonthNumber
-        , YearText = strcat(YearNumber), MonthName
+| project Computer
+        , MonthCount
+        , YearNumber
+        , MonthNumber
+        , YearText = strcat(YearNumber)
+        , MonthName
         , MonthYear = strcat(MonthName, " ", YearNumber )
         , YearMonth = strcat(YearNumber, " - ", MonthName )
 | sort by Computer, YearNumber, MonthNumber

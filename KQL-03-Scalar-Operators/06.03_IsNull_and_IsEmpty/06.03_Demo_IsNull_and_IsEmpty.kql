@@ -4,7 +4,7 @@
 
 // Example 1 - isnull matches on null numeric columns
 AppExceptions
-| where isnull( SeverityLevel)
+| where isnull( SeverityLevel )
 | count
 
 
@@ -12,7 +12,7 @@ AppExceptions
 AppExceptions
 | take 1000
 | extend SeverityLevelText = iif( isnull( SeverityLevel )
-                                 , "No Severity Level"
+                                 , "No Severity Level Provided"
                                  , tostring( SeverityLevel )
                                  )
 | project TimeGenerated
