@@ -35,6 +35,7 @@ Perf
                           , ", "
                           , datetime_part("year", TimeGenerated)
                           )
+// Could have done on one line: strcat( MonthName, " ", datetime_part("day", TimeGenerated), ", ", datetime_part("year", TimeGenerated) )
 | project TimeGenerated
         , MonthName
         , DateText
